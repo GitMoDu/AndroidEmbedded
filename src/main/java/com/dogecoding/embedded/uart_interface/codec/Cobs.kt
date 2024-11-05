@@ -1,7 +1,5 @@
 package com.dogecoding.embedded.uart_interface.codec
 
-import com.dogecoding.embedded.uart_interface.codec.CobsFallback.EncodeStatus
-
 
 // Credit to https://github.com/themarpe/cobs-java and https://github.com/cmcqueen/cobs-c
 @OptIn(ExperimentalUnsignedTypes::class)
