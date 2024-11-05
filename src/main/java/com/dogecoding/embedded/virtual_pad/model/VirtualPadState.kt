@@ -1,6 +1,10 @@
-package com.dogecoding.embedded.i_controller.model
+package com.dogecoding.embedded.virtual_pad.model
 
-class ControllerState {
+import android.os.Parcel
+import android.os.Parcelable
+
+class VirtualPadState {
+
     var joy1X: Short = 0
     var joy1Y: Short = 0
     var joy2X: Short = 0
@@ -20,7 +24,7 @@ class ControllerState {
 
     var connected: Boolean = false
 
-    fun copyFrom(source: ControllerState) {
+    fun copyFrom(source: VirtualPadState) {
         this.joy1X = source.joy1X
         this.joy1Y = source.joy1Y
         this.joy2X = source.joy2X

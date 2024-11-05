@@ -1,11 +1,10 @@
-package com.dogecoding.embedded.i_controller.view
+package com.dogecoding.embedded.virtual_pad.controller
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import com.dogecoding.embedded.i_controller.model.ControllerInputListener
 
 class NativeControllerCaptureView @JvmOverloads constructor(
     context: Context,

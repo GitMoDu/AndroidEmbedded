@@ -1,4 +1,4 @@
-package com.dogecoding.embedded.i_controller.button_parse
+package com.dogecoding.embedded.virtual_pad.button_parse
 
 class SimpleButtonParser {
     private var previousState: Boolean = false

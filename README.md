@@ -5,9 +5,9 @@ Collection of utilities for Android apps to interact with embedded devices.
 
 Embedded Library: https://github.com/GitMoDu/UartInterface
 
-# IInputController
+# VirtualPad
 
-Embedded Library: https://github.com/GitMoDu/IInputController
+Embedded Library: https://github.com/GitMoDu/VirtualPad
 
 # LoLa Link
 

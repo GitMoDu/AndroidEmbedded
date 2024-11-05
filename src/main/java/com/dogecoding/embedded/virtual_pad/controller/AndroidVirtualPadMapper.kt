@@ -1,16 +1,17 @@
-package com.dogecoding.embedded.i_controller
+package com.dogecoding.embedded.virtual_pad.controller
 
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.dogecoding.embedded.i_controller.model.ControllerInputListener
 import com.dogecoding.embedded.uart_interface.usb_serial.TimestampSource.Companion.getMillis
+import com.dogecoding.embedded.virtual_pad.VirtualPad
+import com.dogecoding.embedded.virtual_pad.WriteVirtualPad
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 // Thread-safe Android to IController mapper.
 // Listens to native callbacks to update the controller state.
-class AndroidIControllerMapper(private val focusedMode: Boolean = true) : ControllerInputListener {
+class AndroidVirtualPadMapper(private val focusedMode: Boolean = true) : ControllerInputListener {
 
     companion object {
         val UINT16_MAX: Int = UByte.MAX_VALUE.toInt() * UByte.MAX_VALUE.toInt()
@@ -18,15 +19,15 @@ class AndroidIControllerMapper(private val focusedMode: Boolean = true) : Contro
         val INT16_MIN: Int = Short.MIN_VALUE.toInt()
     }
 
-    private val writeController = WriteIController()
+    private val writeController = WriteVirtualPad()
 
     private val token = Any()
 
     private var lastUpdate: Long = 0
 
-    fun getIInputNow(iInput: IController) {
+    fun getVirtualPadNow(virtualPad: VirtualPad) {
         synchronized(token) {
-            iInput.copyFrom(writeController.getState())
+            virtualPad.copyFrom(writeController.getState())
         }
     }
 

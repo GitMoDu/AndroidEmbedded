@@ -1,26 +1,26 @@
-package com.dogecoding.embedded.i_controller
+package com.dogecoding.embedded.virtual_pad.controller
 
-import com.dogecoding.embedded.i_controller.model.ControllerInputListener
+import com.dogecoding.embedded.virtual_pad.VirtualPad
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 // Abstract Android to IController mapper and update task.
-abstract class IControllerManager(private val updatePeriodMillis: Long) {
+abstract class VirtualPadUpdater(private val updatePeriodMillis: Long) {
 
     private val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
 
     private var updateTask: ScheduledFuture<*>? = null
 
-    private val controllerMapper = AndroidIControllerMapper()
-    private val inputController = IController()
+    private val controllerMapper = AndroidVirtualPadMapper()
+    private val inputController = VirtualPad()
 
     fun getElapsedMillisSinceLastUpdate(): Long {
         return controllerMapper.getElapsedMillisSinceLastUpdate()
     }
 
-    abstract fun onControllerUpdate(input: IController)
+    abstract fun onControllerUpdate(input: VirtualPad)
     abstract fun onStart()
 
     fun getInputControllerListener(): ControllerInputListener {
@@ -48,7 +48,7 @@ abstract class IControllerManager(private val updatePeriodMillis: Long) {
         updateTask?.cancel(false)
         updateTask = scheduler.scheduleWithFixedDelay(
             {
-                controllerMapper.getIInputNow(inputController)
+                controllerMapper.getVirtualPadNow(inputController)
                 onControllerUpdate(inputController)
             }, updatePeriodMillis, updatePeriodMillis, TimeUnit.MILLISECONDS
         )

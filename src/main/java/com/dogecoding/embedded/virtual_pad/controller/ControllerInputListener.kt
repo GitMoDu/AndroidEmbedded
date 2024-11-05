@@ -1,4 +1,4 @@
-package com.dogecoding.embedded.i_controller.model
+package com.dogecoding.embedded.virtual_pad.controller
 
 import android.view.KeyEvent
 import android.view.MotionEvent

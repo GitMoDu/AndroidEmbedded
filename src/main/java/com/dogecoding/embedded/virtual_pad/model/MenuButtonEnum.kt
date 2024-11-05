@@ -1,4 +1,4 @@
-package com.dogecoding.embedded.i_controller.model
+package com.dogecoding.embedded.virtual_pad.model
 
 enum class MenuButtonEnum(val index: Int) {
     Start(0),
