@@ -5,10 +5,14 @@ Collection of utilities for Android apps to interact with embedded devices.
 
 Embedded Library: https://github.com/GitMoDu/UartInterface
 
+- Interface viewmodel with configurable messenger (baudrate, keys).
+- Hardware serial (UART) auto-management.
+- Realtime-compatible, async receive handler.
+- Async request and reply manager, with lambda functions.
+
 # VirtualPad
 
 Embedded Library: https://github.com/GitMoDu/VirtualPad
 
-# LoLa Link
-
-Embedded Library: https://github.com/GitMoDu/LoLa
+- Android Native Controller to Virtual Map mapper.
+- Scheduller task updater.
