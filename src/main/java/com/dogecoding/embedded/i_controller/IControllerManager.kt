@@ -27,6 +27,10 @@ abstract class IControllerManager(private val updatePeriodMillis: Long) {
         return controllerMapper
     }
 
+    fun clear() {
+        inputController.clear()
+    }
+
     fun stop() {
         updateTask?.cancel(false)
     }

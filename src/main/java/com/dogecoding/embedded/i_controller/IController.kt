@@ -18,6 +18,10 @@ open class IController {
         return (buttonMask(bitIndex) and buttonsState) != 0.toUByte()
     }
 
+    fun clear() {
+        controllerState.clear()
+    }
+
     fun copyFrom(source: ControllerState) {
         controllerState.copyFrom(source)
     }

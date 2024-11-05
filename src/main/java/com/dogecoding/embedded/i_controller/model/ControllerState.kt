@@ -34,4 +34,19 @@ class ControllerState {
         this.menuButtons = source.menuButtons
         this.connected = source.connected
     }
+
+    fun clear() {
+        this.joy1X = 0
+        this.joy1Y = 0
+        this.joy2X = 0
+        this.joy2Y = 0
+
+        this.l2 = 0
+        this.r2 = 0
+
+        this.dPad = DPadEnum.None
+        this.mainButtons = 0u
+        this.menuButtons = 0u
+        this.connected = false
+    }
 }
