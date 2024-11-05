@@ -4,32 +4,26 @@ package com.dogecoding.embedded.uart_interface.codec
 class Fletcher16 {
 
     companion object {
-        private val MODULUS: Short = UShort.MAX_VALUE.toShort()
-
-        fun fletcher16(data: ByteArray): Int {
-            var sum1 = 0
-            var sum2 = 0
-
-            for (d in data) {
-                sum1 = (sum1 + d) % MODULUS
-                sum2 = (sum2 + sum1) % MODULUS
-            }
-
-            return sum2.shl(8).or(sum1)
-        }
+        private val MODULUS: UShort = UByte.MAX_VALUE.toUShort()
     }
 
-    private var sum1: Int = 0
-    private var sum2: Int = 0
+    private var sum1: UShort = 0u
+    private var sum2: UShort = 0u
 
-    fun begin(s1: Int = 0, s2: Int = 0) {
+    fun begin(s1: UShort = 0u, s2: UShort = 0u) {
         sum1 = s1
         sum2 = s2
     }
 
     fun add(value: UByte) {
-        sum1 = (sum1 + value.toInt()) % MODULUS
-        sum2 = (sum2 + sum1) % MODULUS
+        sum1 = (sum1 + value.toUShort()).toUShort()
+        if (sum1 >= MODULUS) {
+            sum1 = (sum1 - MODULUS).toUShort()
+        }
+        sum2 = (sum2 + sum1).toUShort()
+        if (sum2 >= MODULUS) {
+            sum2 = (sum2 - MODULUS).toUShort()
+        }
     }
 
     fun add(bytes: UByteArray, size: Int, offset: Int) {
@@ -38,7 +32,7 @@ class Fletcher16 {
         }
     }
 
-    fun getFletcher(): Int {
-        return sum2.shl(8).or(sum1)
+    fun getFletcher(): UShort {
+        return sum1.or(sum2.toInt().shl(8).toUShort())
     }
 }

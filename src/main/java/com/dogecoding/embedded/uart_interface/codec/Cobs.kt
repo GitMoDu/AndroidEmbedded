@@ -1,175 +1,134 @@
 package com.dogecoding.embedded.uart_interface.codec
 
+import com.dogecoding.embedded.uart_interface.codec.CobsFallback.EncodeStatus
 
+
+// Credit to https://github.com/themarpe/cobs-java and https://github.com/cmcqueen/cobs-c
 @OptIn(ExperimentalUnsignedTypes::class)
-object Cobs {
-    fun encodeDstBufMaxLen(srcLen: Int): Int {
-        return ((srcLen) + (((srcLen) + 253) / 254))
-    }
+class Cobs {
 
-    fun decodeDstBufMaxLen(srcLen: Int): Int {
-        return (if (((srcLen) == 0)) 0 else ((srcLen) - 1))
-    }
+    companion object {
+        val MAX_COBS_MESSAGE_SIZE: Int = (UByte.MAX_VALUE - 2u).toInt()
 
+        fun encode(target: UByteArray, size: Int, source: UByteArray): Int {
+            var targetWriteCounter = 1
+            var targetCodeWriteCounter = 0
 
-    fun encode(
-        dst_buf_ptr: UByteArray, dst_buf_len: Int, src_ptr: UByteArray, src_len: Int
-    ): EncodeResult {
-        val result = EncodeResult()
-        result.outLen = 0
-        result.status = EncodeStatus.OK
+            var sourceReadCounter = 0
+            var searchLength = 1
 
-        var dst_write_counter = 1
-        var dst_code_write_counter = 0
-        val dst_buf_end_counter = dst_buf_len
-
-        var src_ptr_counter = 0
-        val src_end_counter = src_len
-
-        var search_len = 1
-
-        if (src_len != 0) {/* Iterate over the source bytes */
-            while (true) {/* Check for running out of output buffer space */
-                if (dst_write_counter >= dst_buf_end_counter) {
-                    result.status = EncodeStatus.OUT_BUFFER_OVERFLOW
-                    break
-                }
-
-                val src_byte = src_ptr[src_ptr_counter++].toInt()
-
-                if (src_byte == 0) {/* We found a zero byte */
-                    dst_buf_ptr[dst_code_write_counter] = (search_len and 0xFF).toUByte()
-                    dst_code_write_counter = dst_write_counter++
-                    search_len = 1
-                    if (src_ptr_counter >= src_end_counter) {
-                        break
+            if (size != 0) {
+                // Iterate over the source bytes
+                while (true) {
+                    // Check for running out of output buffer space.
+                    if (targetWriteCounter > size) {
+                        return targetWriteCounter + 1
                     }
-                } else {/* Copy the non-zero byte to the destination buffer */
-                    dst_buf_ptr[dst_write_counter++] = (src_byte and 0xFF).toUByte()
 
-                    search_len++
-                    if (src_ptr_counter >= src_end_counter) {
-                        break
-                    }
-                    if (search_len == 0xFF) {/* We have a long string of non-zero bytes, so we need
-                         * to write out a length code of 0xFF. */
-                        dst_buf_ptr[dst_code_write_counter] = (search_len and 0xFF).toUByte()
+                    val sourceByte = source[sourceReadCounter++].toInt()
 
-                        dst_code_write_counter = dst_write_counter++
-                        search_len = 1
+                    if (sourceByte == 0) {
+                        // We found a zero byte.
+                        target[targetCodeWriteCounter] = (searchLength and 0xFF).toUByte()
+                        targetCodeWriteCounter = targetWriteCounter++
+                        searchLength = 1
+                        if (sourceReadCounter >= size) {
+                            break
+                        }
+                    } else {
+                        // Copy the non-zero byte to the target buffer.
+                        target[targetWriteCounter++] = (sourceByte and 0xFF).toUByte()
+
+                        searchLength++
+                        if (sourceReadCounter >= size) {
+                            break
+                        }
+                        if (searchLength == 0xFF) {
+                            // We have a long string of non-zero bytes, so we need to write out a length code of 0xFF.
+                            target[targetCodeWriteCounter] = (searchLength and 0xFF).toUByte()
+
+                            targetCodeWriteCounter = targetWriteCounter++
+                            searchLength = 1
+                        }
                     }
                 }
             }
+
+            // We've reached the end of the source data (or possibly run out of output buffer).
+            // Finalise the remaining output. In particular, write the code (length) byte.
+            // Update the pointer to calculate the final output length.
+            if (targetCodeWriteCounter > size) {
+                // We've run out of output buffer to write the code byte.
+                return targetWriteCounter + 1
+            } else {
+                // Write the last code (length) byte.
+                target[targetCodeWriteCounter] = (searchLength and 0xFF).toUByte()
+            }
+
+            // Calculate the output length, from the value of dst_code_write_ptr.
+            return targetWriteCounter
         }
 
-        /* We've reached the end of the source data (or possibly run out of output buffer)
-         * Finalise the remaining output. In particular, write the code (length) byte.
-         * Update the pointer to calculate the final output length.
-         */
-        if (dst_code_write_counter >= dst_buf_end_counter) {/* We've run out of output buffer to write the code byte. */
-            result.status = EncodeStatus.OUT_BUFFER_OVERFLOW
-            dst_write_counter = dst_buf_end_counter
-        } else {/* Write the last code (length) byte. */
-            dst_buf_ptr[dst_code_write_counter] = (search_len and 0xFF).toUByte()
-        }
+        fun decode(
+            target: UByteArray, size: Int, source: UByteArray
+        ): Int {
+            var sourceReadCounter = 0
+            var targetWriteCounter = 0
+            var remaining: Int
+            var sourceByte: Int
+            var i: Int
+            var lengthCode: Int
 
-        /* Calculate the output length, from the value of dst_code_write_ptr */
-        result.outLen = dst_write_counter
+            if (size != 0) {
+                while (true) {
+                    lengthCode = source[sourceReadCounter++].toInt()
+                    if (lengthCode == 0) {
+                        return sourceReadCounter + 1
+                    }
+                    lengthCode--
 
-        return result
-    }
-
-
-    fun decode(
-        dst_buf_ptr: UByteArray, dst_buf_len: Int, src_ptr: UByteArray, src_len: Int
-    ): DecodeResult {
-        val result = DecodeResult()
-        result.outLen = 0
-        result.status = DecodeStatus.OK
-
-        var src_ptr_counter = 0
-        val src_end_counter = src_len
-        val dst_buf_end_counter = dst_buf_len
-        var dst_write_counter = 0
-        var remaining_bytes: Int
-        var src_byte: Int
-        var i: Int
-        var len_code: Int
-
-        if (src_len != 0) {
-            while (true) {
-                len_code = src_ptr[src_ptr_counter++].toInt()
-                if (len_code == 0) {
-                    result.status = DecodeStatus.ZERO_BYTE_IN_INPUT
-                    break
-                }
-                len_code--
-
-                /* Check length code against remaining input bytes */
-                remaining_bytes = src_end_counter - src_ptr_counter
-                if (len_code > remaining_bytes) {
-                    result.status = DecodeStatus.INPUT_TOO_SHORT
-                    len_code = remaining_bytes
-                }
-
-                /* Check length code against remaining output buffer space */
-                remaining_bytes = dst_buf_end_counter - dst_write_counter
-                if (len_code > remaining_bytes) {
-                    result.status = DecodeStatus.OUT_BUFFER_OVERFLOW
-                    len_code = remaining_bytes
-                }
-
-                i = len_code
-                while (i != 0) {
-                    src_byte = (src_ptr[src_ptr_counter++].toInt() and 0xFF).toChar().code
-                    if (src_byte == 0) {
-                        result.status = DecodeStatus.ZERO_BYTE_IN_INPUT
+                    /* Check length code against remaining input bytes */
+                    remaining = size - sourceReadCounter
+                    if (lengthCode > remaining) {
+                        return lengthCode
                     }
 
-                    dst_buf_ptr[dst_write_counter++] = src_byte.toUByte()
-                    i--
+                    /* Check length code against remaining output buffer space */
+                    remaining = size - targetWriteCounter
+                    if (lengthCode > remaining) {
+                        return lengthCode
+                    }
 
-                    if (src_ptr_counter >= src_end_counter) {
+                    i = lengthCode
+                    while (i != 0) {
+                        sourceByte = (source[sourceReadCounter++].toInt() and 0xFF).toChar().code
+                        if (sourceByte == 0) {
+                            return 0
+                        }
+
+                        target[targetWriteCounter++] = sourceByte.toUByte()
+                        i--
+
+                        if (sourceReadCounter >= size) {
+                            break
+                        }
+                    }
+
+                    if (sourceReadCounter >= size) {
                         break
                     }
-                }
 
-                if (src_ptr_counter >= src_end_counter) {
-                    break
-                }
-
-                /* Add a zero to the end */
-                if (len_code != 0xFE) {
-                    if (dst_write_counter >= dst_buf_end_counter) {
-                        result.status = DecodeStatus.OUT_BUFFER_OVERFLOW
-                        break
+                    // Add a zero to the end.
+                    if (lengthCode != 0xFE) {
+                        if (targetWriteCounter > size) {
+                            return 0
+                        }
+                        target[targetWriteCounter++] = 0u
                     }
-                    dst_buf_ptr[dst_write_counter++] = 0u
                 }
             }
+
+            return targetWriteCounter
         }
-
-        result.outLen = dst_write_counter
-
-        return result
-    }
-
-
-    enum class EncodeStatus {
-        OK, NULL_POINTER, OUT_BUFFER_OVERFLOW
-    }
-
-    class EncodeResult {
-        var outLen: Int = 0
-        var status: EncodeStatus? = null
-    }
-
-    enum class DecodeStatus {
-        OK, NULL_POINTER, OUT_BUFFER_OVERFLOW, ZERO_BYTE_IN_INPUT, INPUT_TOO_SHORT
-    }
-
-    class DecodeResult {
-        var outLen: Int = 0
-        var status: DecodeStatus? = null
     }
 }

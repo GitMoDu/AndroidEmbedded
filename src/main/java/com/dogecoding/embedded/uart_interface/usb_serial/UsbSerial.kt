@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.hardware.usb.UsbManager
+import android.os.Process
 import android.util.Log
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
@@ -17,7 +18,7 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
 
     companion object {
         val TAG: String = UsbSerial::class.java.name
-        const val WRITE_WAIT_MILLIS: Int = 1000
+        const val WRITE_WAIT_MILLIS: Int = 20
 
         private fun INTENT_ACTION_GRANT_USB(appId: String): String {
             return appId + ".GRANT_USB"
@@ -36,8 +37,6 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
     private var connecting = false
     private var serialDevice: SerialDevice? = null
 
-    private var _usbManager: UsbManager? = null
-
     private fun getFirstDevice(context: Context): SerialDevice? {
         val usbManager = getUsbManager(context)
         val usbDefaultProber = UsbSerialProber.getDefaultProber()
@@ -50,9 +49,7 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
             }
             if (driver != null) {
                 return SerialDevice(
-                    device = device,
-                    port = driver.ports.first().portNumber,
-                    driver = driver
+                    device = device, port = driver.ports.first().portNumber, driver = driver
                 )
             }
         }
@@ -61,15 +58,7 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
     }
 
     private fun getUsbManager(context: Context): UsbManager {
-        if (_usbManager == null) {
-            _usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
-        }
-
-        return _usbManager!!
-    }
-
-    private fun status(str: String) {
-        Log.d(TAG, str)
+        return context.getSystemService(Context.USB_SERVICE) as UsbManager
     }
 
     fun isConnected(): Boolean {
@@ -89,28 +78,26 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
         val context: Context = activity.applicationContext
 
         val usbManager = getUsbManager(context)
+
         serialDevice = getFirstDevice(context)
 
         if (serialDevice == null) {
-            status("connection failed: no device")
+            Log.d(TAG, "connection failed: no device")
 
             connecting = false
             return
         }
 
         val driver = serialDevice!!.driver
-
         usbSerialPort = driver.ports[serialDevice!!.port]
         val usbConnection = usbManager.openDevice(driver.device)
-        if (usbConnection == null
-            && serialDevice!!.permissionsGranted == null
-            && !usbManager.hasPermission(driver.device)
+        if (usbConnection == null && serialDevice!!.permissionsGranted == null && !usbManager.hasPermission(
+                driver.device
+            )
         ) {
             serialDevice!!.permissionsGranted = false
-            val flags =
-                PendingIntent.FLAG_MUTABLE
-            val intent: Intent =
-                Intent(INTENT_ACTION_GRANT_USB(activity.application.packageName))
+            val flags = PendingIntent.FLAG_MUTABLE
+            val intent: Intent = Intent(INTENT_ACTION_GRANT_USB(activity.application.packageName))
             intent.setPackage(context.packageName)
             val usbPermissionIntent = PendingIntent.getBroadcast(context, 0, intent, flags)
             usbManager.requestPermission(driver.device, usbPermissionIntent)
@@ -121,8 +108,11 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
         }
 
         if (usbConnection == null) {
-            if (!usbManager.hasPermission(driver.device)) status("connection failed: permission denied")
-            else status("connection failed: open failed")
+            if (!usbManager.hasPermission(driver.device)) {
+                Log.d(TAG, "connection failed: permission denied")
+            } else {
+                Log.d(TAG, "connection failed: open failed")
+            }
             connecting = false
 
             return
@@ -135,20 +125,26 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
                 usbSerialPort!!.setParameters(baudRate, 8, 1, UsbSerialPort.PARITY_NONE)
                 usbSerialPort!!.rts = false
                 usbSerialPort!!.dtr = true
+                usbSerialPort!!.flowControl = UsbSerialPort.FlowControl.NONE
+
             } catch (e: UnsupportedOperationException) {
-                status("unsupport setparameters")
+                Log.d(TAG, "unsupport setparameters")
             }
             usbIoManager = SerialInputOutputManager(usbSerialPort, this)
+            usbIoManager!!.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO)
+            usbIoManager!!.readTimeout = 10
+            usbIoManager!!.writeTimeout = 10
             usbIoManager!!.start()
 
-            status("connected")
+
+            Log.d(TAG, "connected")
             synchronized(synchronizationToken) {
                 connected = true
             }
             usbSerialListener.onConnected()
 
         } catch (e: Exception) {
-            status("connection failed: " + e.message)
+            Log.d(TAG, "connection failed: " + e.message)
             disconnect()
         }
     }
@@ -156,23 +152,27 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
     fun disconnect() {
         val previousState: Boolean
         synchronized(synchronizationToken) {
-            previousState = connected
+            previousState = connected or connecting
         }
         if (previousState) {
-            status("disconnected")
+            Log.d(TAG, "disconnected")
 
             synchronized(synchronizationToken) {
                 connected = false
                 connecting = false
             }
-            if (usbIoManager != null) {
-                usbIoManager?.listener = null
-                usbIoManager?.stop()
-            }
-            usbIoManager = null
             try {
+                if (usbIoManager != null) {
+                    usbIoManager?.listener = null
+                    usbIoManager?.stop()
+                }
+                usbIoManager = null
+
+                usbSerialPort?.dtr = false
+                usbSerialPort?.controlLines?.clear()
                 usbSerialPort?.close()
-            } catch (ignored: IOException) {
+            } catch (ex: Exception) {
+                Log.e(TAG, "Error closing USB serial ${ex.message}")
             }
             usbSerialPort = null
 
@@ -181,9 +181,7 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
     }
 
     override fun onNewData(data: ByteArray?) {
-        if (connected
-            && data != null
-        ) {
+        if (connected && data != null) {
             usbSerialListener?.onNewData(data)
         }
     }
@@ -193,18 +191,16 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
             usbSerialListener?.onRunError(e)
         }
 
-        status("connection error: " + e?.message)
+        Log.d(TAG, "connection error: " + e?.message)
         disconnect()
     }
 
-    fun serialWrite(value: UByte, waitMillis: Int = WRITE_WAIT_MILLIS) {
+    fun serialWrite(value: UByte) {
         if (usbSerialPort?.isOpen == true) {
             try {
                 singleArray[0] = value.toByte()
                 usbSerialPort!!.write(
-                    singleArray,
-                    1,
-                    WRITE_WAIT_MILLIS
+                    singleArray, 1, WRITE_WAIT_MILLIS
                 )
             } catch (e: java.lang.Exception) {
                 onRunError(e)
@@ -214,7 +210,7 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
         }
     }
 
-    fun serialWrite(data: UByteArray, size: Int, waitMillis: Int = WRITE_WAIT_MILLIS) {
+    fun serialWrite(data: UByteArray, size: Int) {
         if (usbSerialPort?.isOpen == true) {
             val copy = ByteArray(size)
             for (i in 0 until size) {
@@ -223,9 +219,7 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener {
 
             try {
                 usbSerialPort!!.write(
-                    copy,
-                    size,
-                    waitMillis
+                    copy, size, WRITE_WAIT_MILLIS
                 )
             } catch (e: java.lang.Exception) {
                 onRunError(e)
