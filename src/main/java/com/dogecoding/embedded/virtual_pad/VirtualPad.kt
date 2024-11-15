@@ -25,9 +25,9 @@ import com.dogecoding.embedded.virtual_pad.model.MenuButtonEnum
  *
  * Face Buttons:
  *
- * 	[Y]
- * [X]        [B]
- * 	[A]
+ *      [Y]
+ * [X]      [B]
+ *      [A]
  *
  *
  * Joysticks 1 and 2, with respective L3 and R3:

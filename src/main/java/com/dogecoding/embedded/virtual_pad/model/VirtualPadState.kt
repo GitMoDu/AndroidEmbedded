@@ -1,10 +1,7 @@
 package com.dogecoding.embedded.virtual_pad.model
 
-import android.os.Parcel
-import android.os.Parcelable
 
 class VirtualPadState {
-
     var joy1X: Short = 0
     var joy1Y: Short = 0
     var joy2X: Short = 0
