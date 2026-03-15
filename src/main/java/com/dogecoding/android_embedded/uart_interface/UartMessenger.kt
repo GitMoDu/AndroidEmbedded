@@ -8,8 +8,8 @@ import com.dogecoding.android_embedded.uart_interface.codec.UartCrc
 import com.dogecoding.android_embedded.uart_interface.model.Format
 import com.dogecoding.android_embedded.uart_interface.model.Message
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
-import com.dogecoding.android_embedded.uart_interface.usb_serial.UsbSerial
-import com.dogecoding.android_embedded.uart_interface.usb_serial.UsbSerialListener
+import com.dogecoding.android_embedded.usb_serial.UsbSerial
+import com.dogecoding.android_embedded.usb_serial.UsbSerialListener
 
 // Abstract UART messenger with COBS framing and Fletcher16 CRC.
 @OptIn(ExperimentalUnsignedTypes::class)

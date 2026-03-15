@@ -1,9 +1,9 @@
 package com.dogecoding.android_embedded.uart_interface.async
 
 import android.util.Log
+import com.dogecoding.android_embedded.common.TimestampSource
 import com.dogecoding.android_embedded.uart_interface.UartMessenger
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
-import com.dogecoding.android_embedded.uart_interface.usb_serial.TimestampSource.Companion.getMillis
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -63,13 +63,11 @@ class UartMultiRequestHandler(
     }
 
     private fun elapsedMillisSinceLastSent(): Long {
-        val timestamp = getMillis()
+        val timestamp = TimestampSource.getMillis()
         var elapsed: Long? = null
         synchronized(token) {
             requests.forEach {
-                if (elapsed == null
-                    || it.elapsed(timestamp) < elapsed!!
-                ) {
+                if (elapsed == null || it.elapsed(timestamp) < elapsed!!) {
                     elapsed = it.elapsed(timestamp)
                 }
             }
@@ -103,10 +101,9 @@ class UartMultiRequestHandler(
     }
 
     fun request(
-        requestHeader: Int,
-        onSend: () -> Unit
+        requestHeader: Int, onSend: () -> Unit
     ): Boolean {
-        val timestamp = getMillis()
+        val timestamp = TimestampSource.getMillis()
 
         if (!canRequest()) {
             return false
@@ -124,8 +121,7 @@ class UartMultiRequestHandler(
                     timeout = 0,
                     onSend = onSend,
                     onReply = { payload: UByteArray? -> },
-                    onFail = {}
-                )
+                    onFail = {})
 
                 startTaskCheck(handler)
 
@@ -145,7 +141,7 @@ class UartMultiRequestHandler(
         onReply: (payload: UByteArray?) -> Unit,
         onFail: () -> Unit
     ): Boolean {
-        val timestamp = getMillis()
+        val timestamp = TimestampSource.getMillis()
 
         if (!canRequest()) {
             return false
@@ -177,9 +173,7 @@ class UartMultiRequestHandler(
 
     private fun getReplyHandler(header: UByte): UartRequest? {
         for (i in 0 until requests.count()) {
-            if (requests[i].getState() == UartRequest.State.WaitingForReply
-                && requests[i].replyHeader == header
-            ) {
+            if (requests[i].getState() == UartRequest.State.WaitingForReply && requests[i].replyHeader == header) {
                 return requests[i]
             }
         }
@@ -188,7 +182,7 @@ class UartMultiRequestHandler(
     }
 
     override fun onMessageReceived(header: UByte, payload: UByteArray?) {
-        val timestamp = getMillis()
+        val timestamp = TimestampSource.getMillis()
         synchronized(token) {
             replyHandler = getReplyHandler(header)
 
@@ -197,14 +191,12 @@ class UartMultiRequestHandler(
                     replyHandler!!.onReply(payload)
                 } catch (ex: Exception) {
                     Log.e(
-                        TAG,
-                        "Request onReply exception: ${ex.message}"
+                        TAG, "Request onReply exception: ${ex.message}"
                     )
                 }
                 replyHandler!!.clear()
                 Log.i(
-                    TAG,
-                    "($header) Reply to took ${replyHandler!!.elapsedSinceSend(timestamp)} ms"
+                    TAG, "($header) Reply to took ${replyHandler!!.elapsedSinceSend(timestamp)} ms"
                 )
 
             } else {
@@ -213,8 +205,7 @@ class UartMultiRequestHandler(
                     receiveListener.onMessageReceived(header, payload)
                 } catch (ex: Exception) {
                     Log.e(
-                        TAG,
-                        "Request Receive exception: ${ex.message}"
+                        TAG, "Request Receive exception: ${ex.message}"
                     )
                 }
             }
@@ -235,9 +226,7 @@ class UartMultiRequestHandler(
                 if (request.timedOut(timestamp)) {
                     request.onFail()
                     request.setState(UartRequest.State.Done)
-                } else if (uartMessenger.isConnected()
-                    && elapsedMillisSinceLastSent() >= minSendPeriod
-                    && uartMessenger.sendMessage(
+                } else if (uartMessenger.isConnected() && elapsedMillisSinceLastSent() >= minSendPeriod && uartMessenger.sendMessage(
                         request.requestHeader, request.payload
                     )
                 ) {
@@ -286,7 +275,7 @@ class UartMultiRequestHandler(
         if (request.runTask == null || request.runTask?.isCancelled == true) {
             request.runTask = scheduler.scheduleWithFixedDelay(
                 {
-                    runCheck(request, getMillis())
+                    runCheck(request, TimestampSource.getMillis())
                 }, checkPeriodMillis, checkPeriodMillis, TimeUnit.MILLISECONDS
             )
         }

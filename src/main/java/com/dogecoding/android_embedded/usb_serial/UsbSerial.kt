@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.uart_interface.usb_serial
+package com.dogecoding.android_embedded.usb_serial
 
 import android.app.Activity
 import android.app.PendingIntent

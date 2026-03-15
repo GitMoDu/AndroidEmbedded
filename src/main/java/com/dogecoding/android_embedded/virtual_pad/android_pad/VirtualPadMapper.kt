@@ -3,7 +3,7 @@ package com.dogecoding.android_embedded.virtual_pad.android_pad
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.dogecoding.android_embedded.uart_interface.usb_serial.TimestampSource
+import com.dogecoding.android_embedded.common.TimestampSource
 import com.dogecoding.android_embedded.virtual_pad.VirtualPad
 import com.dogecoding.android_embedded.virtual_pad.WriteVirtualPad
 import com.dogecoding.android_embedded.virtual_pad.controller.ControllerInputListener
