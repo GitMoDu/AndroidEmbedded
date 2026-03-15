@@ -2,6 +2,7 @@ package com.dogecoding.android_embedded.uart_interface
 
 import android.app.Activity
 import android.util.Log
+import com.dogecoding.android_embedded.serial.SerialInterface
 import com.dogecoding.android_embedded.serial.SerialListener
 import com.dogecoding.android_embedded.uart_interface.async.AbstractUartAsyncReceiver
 import com.dogecoding.android_embedded.uart_interface.codec.Cobs
@@ -9,13 +10,15 @@ import com.dogecoding.android_embedded.uart_interface.codec.UartCrc
 import com.dogecoding.android_embedded.uart_interface.model.Format
 import com.dogecoding.android_embedded.uart_interface.model.Message
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
-import com.dogecoding.android_embedded.serial.usb_serial.UsbSerial
 
 // Abstract UART messenger with COBS framing and Fletcher16 CRC.
 @OptIn(ExperimentalUnsignedTypes::class)
 class UartMessenger(
-    baudRate: Int, key: UByteArray,
-    checkPeriodMillis: Long = 2, messageStackSize: Int = 10, maxPayloadSize: Int = 250
+    private val serialInterface: SerialInterface,
+    private val key: UByteArray,
+    checkPeriodMillis: Long = 2,
+    messageStackSize: Int = 10,
+    maxPayloadSize: Int = 250
 ) : SerialListener {
 
     companion object {
@@ -30,7 +33,6 @@ class UartMessenger(
     private val readToken = Any()
     private val deliverToken = Any()
 
-    private val usbSerial = UsbSerial(baudRate)
     private val uartCrc = UartCrc(key)
     private val uartParser = UartParser()
 
@@ -73,19 +75,19 @@ class UartMessenger(
     }
 
     fun isConnected(): Boolean {
-        return usbSerial.isConnected()
+        return serialInterface.isConnected()
     }
 
     fun isConnecting(): Boolean {
-        return usbSerial.isConnecting()
+        return serialInterface.isConnecting()
     }
 
     fun disconnect() {
-        usbSerial.disconnect()
+        serialInterface.disconnect()
     }
 
     fun connect(activity: Activity) {
-        usbSerial.connect(activity, this)
+        serialInterface.connect(activity, this)
     }
 
     private fun sendOutMessage(size: Int): Boolean {
@@ -97,9 +99,9 @@ class UartMessenger(
             outMessage[Format.Crc1.index] = ((crc.toInt().shr(8)).toUShort() and 255u).toUByte()
 
             if (Cobs.encode(target = outBuffer, size = size, source = outMessage) == size + 1) {
-                usbSerial.serialWrite(PacketEndMarker)
-                usbSerial.serialWrite(outBuffer, size + 1)
-                usbSerial.serialWrite(PacketEndMarker)
+                serialInterface.serialWrite(PacketEndMarker)
+                serialInterface.serialWrite(outBuffer, size + 1)
+                serialInterface.serialWrite(PacketEndMarker)
 
                 return true
             }
