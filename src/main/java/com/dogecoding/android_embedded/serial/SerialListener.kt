@@ -1,6 +1,6 @@
-package com.dogecoding.android_embedded.usb_serial
+package com.dogecoding.android_embedded.serial
 
-interface UsbSerialListener {
+interface SerialListener {
     fun onConnected()
     fun onDisconnected()
 

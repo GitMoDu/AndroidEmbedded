@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.common
+package com.dogecoding.android_core.common
 
 import android.os.SystemClock
 

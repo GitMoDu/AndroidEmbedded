@@ -2,21 +2,21 @@ package com.dogecoding.android_embedded.uart_interface
 
 import android.app.Activity
 import android.util.Log
+import com.dogecoding.android_embedded.serial.SerialListener
 import com.dogecoding.android_embedded.uart_interface.async.AbstractUartAsyncReceiver
 import com.dogecoding.android_embedded.uart_interface.codec.Cobs
 import com.dogecoding.android_embedded.uart_interface.codec.UartCrc
 import com.dogecoding.android_embedded.uart_interface.model.Format
 import com.dogecoding.android_embedded.uart_interface.model.Message
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
-import com.dogecoding.android_embedded.usb_serial.UsbSerial
-import com.dogecoding.android_embedded.usb_serial.UsbSerialListener
+import com.dogecoding.android_embedded.serial.usb_serial.UsbSerial
 
 // Abstract UART messenger with COBS framing and Fletcher16 CRC.
 @OptIn(ExperimentalUnsignedTypes::class)
 class UartMessenger(
     baudRate: Int, key: UByteArray,
     checkPeriodMillis: Long = 2, messageStackSize: Int = 10, maxPayloadSize: Int = 250
-) : UsbSerialListener {
+) : SerialListener {
 
     companion object {
         private val TAG: String = UartMessenger::class.java.name

@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.uart_interface.extension
+package com.dogecoding.android_core.extension
 
 
 @OptIn(ExperimentalUnsignedTypes::class)

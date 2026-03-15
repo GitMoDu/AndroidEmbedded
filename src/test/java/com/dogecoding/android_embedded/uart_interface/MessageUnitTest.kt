@@ -2,7 +2,7 @@ package com.dogecoding.android_embedded.uart_interface
 
 import com.dogecoding.android_embedded.uart_interface.codec.Cobs
 import com.dogecoding.android_embedded.uart_interface.codec.UartCrc
-import com.dogecoding.android_embedded.uart_interface.extension.toUByteArray
+import com.dogecoding.android_core.extension.toUByteArray
 import com.dogecoding.android_embedded.uart_interface.model.Format
 import com.dogecoding.android_embedded.uart_interface.model.Message
 import org.junit.Test

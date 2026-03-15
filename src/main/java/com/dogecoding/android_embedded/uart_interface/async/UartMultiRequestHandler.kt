@@ -1,7 +1,7 @@
 package com.dogecoding.android_embedded.uart_interface.async
 
 import android.util.Log
-import com.dogecoding.android_embedded.common.TimestampSource
+import com.dogecoding.android_core.common.TimestampSource
 import com.dogecoding.android_embedded.uart_interface.UartMessenger
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
 import java.util.concurrent.Executors
