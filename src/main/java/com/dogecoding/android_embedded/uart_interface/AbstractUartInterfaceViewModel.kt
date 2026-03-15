@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalUnsignedTypes::class)
 abstract class AbstractUartInterfaceViewModel(
-    serialInterface: SerialInterface, 
     key: UByteArray,
     checkPeriodMillis: Long = 2,
     messageStackSize: Int = 10,
@@ -33,17 +32,15 @@ abstract class AbstractUartInterfaceViewModel(
     private val token = Any()
     private var state: InterfaceState = InterfaceState.Disabled
 
-    private val uartMessenger = UartMessenger(
-        serialInterface = serialInterface,
-        key = key,
-        checkPeriodMillis = checkPeriodMillis,
-        messageStackSize = messageStackSize,
-        maxPayloadSize = maxPayloadSize
-    )
-
+    private var uartMessenger: UartMessenger? = null
 
     private val scheduler: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
     private var checkTask: ScheduledFuture<*>? = null
+
+    private val messengerKey = key
+    private val messengerCheckPeriodMillis = checkPeriodMillis
+    private val messengerMessageStackSize = messageStackSize
+    private val messengerMaxPayloadSize = maxPayloadSize
 
     abstract fun onInterfaceStart()
     abstract fun onInterfaceStop()
@@ -80,8 +77,18 @@ abstract class AbstractUartInterfaceViewModel(
         }
     }
 
-    fun startUpdates(activity: Activity) {
+    fun startUpdates(activity: Activity, serialInterface: SerialInterface) {
         Log.d(TAG, "Start check task")
+
+        if (uartMessenger == null) {
+            uartMessenger = UartMessenger(
+                serialInterface = serialInterface,
+                key = messengerKey,
+                checkPeriodMillis = messengerCheckPeriodMillis,
+                messageStackSize = messengerMessageStackSize,
+                maxPayloadSize = messengerMaxPayloadSize
+            )
+        }
 
         setState(InterfaceState.NoDevice)
         checkTask?.cancel(false)
@@ -89,7 +96,8 @@ abstract class AbstractUartInterfaceViewModel(
     }
 
     private fun startCheckTask(activity: Activity) {
-        uartMessenger.receiveListener = this
+        val messenger = uartMessenger ?: return
+        messenger.receiveListener = this
 
         checkTask = scheduler.scheduleWithFixedDelay(
             {
@@ -100,13 +108,13 @@ abstract class AbstractUartInterfaceViewModel(
                     }
 
                     InterfaceState.NoDevice -> {
-                        if (uartMessenger.isConnected()) {
+                        if (messenger.isConnected()) {
                             setState(InterfaceState.UartConnected)
                             Log.d(TAG, "Messenger connected")
 
                             onInterfaceStart()
-                        } else if (!uartMessenger.isConnecting()) {
-                            uartMessenger.connect(activity)
+                        } else if (!messenger.isConnecting()) {
+                            messenger.connect(activity)
                             Log.d(TAG, "Messenger connect requested")
                         }
                     }
@@ -138,7 +146,7 @@ abstract class AbstractUartInterfaceViewModel(
     fun stopUpdates() {
         Log.d(TAG, "Stop check task and Messenger")
         checkTask?.cancel(false)
-        uartMessenger.disconnect()
+        uartMessenger?.disconnect()
 
         when (getState()) {
             InterfaceState.Disabled -> {
