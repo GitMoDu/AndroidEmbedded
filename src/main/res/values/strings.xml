@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ble_scan_remember_this_device">Remember this device</string>
+    <string name="ble_scan_scan">Scan</string>
+    <string name="ble_scan_stop">Stop</string>
+    <string name="ble_scan_cancel">Cancel</string>
+    <string name="ble_scan_permissions_required">Permissions required for BLE scanning</string>
+    <string name="ble_scan_unknown_device">Unknown Device</string>
+    <string name="ble_scan_connect_to_ble_serial">Connect to BLE Serial</string>
+</resources>
