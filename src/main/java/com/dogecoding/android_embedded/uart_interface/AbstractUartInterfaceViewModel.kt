@@ -3,6 +3,7 @@ package com.dogecoding.android_embedded.uart_interface
 import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.dogecoding.android_embedded.serial.SerialInterface
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -11,7 +12,8 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalUnsignedTypes::class)
 abstract class AbstractUartInterfaceViewModel(
-    baudRate: Int, key: UByteArray,
+    serialInterface: SerialInterface, 
+    key: UByteArray,
     checkPeriodMillis: Long = 2,
     messageStackSize: Int = 10,
     maxPayloadSize: Int = 250
@@ -32,7 +34,7 @@ abstract class AbstractUartInterfaceViewModel(
     private var state: InterfaceState = InterfaceState.Disabled
 
     private val uartMessenger = UartMessenger(
-        baudRate = baudRate,
+        serialInterface = serialInterface,
         key = key,
         checkPeriodMillis = checkPeriodMillis,
         messageStackSize = messageStackSize,

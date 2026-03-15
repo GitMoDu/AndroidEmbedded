@@ -2,6 +2,7 @@ package com.dogecoding.android_embedded.uart_interface.async
 
 import android.util.Log
 import androidx.fragment.app.Fragment
+import com.dogecoding.android_embedded.serial.SerialInterface
 import com.dogecoding.android_embedded.uart_interface.UartMessenger
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
 
@@ -12,7 +13,7 @@ open class UartInterfaceManager(
     requestCheckPeriodMillis: Long,
     minSendPeriod: Long,
     maxConcurrentRequests: Int,
-    baudRate: Int,
+    serialInterface: SerialInterface,
     key: UByteArray,
     uartCheckPeriodMillis: Long = 2, messageStackSize: Int = 10, maxPayloadSize: Int = 250
 ) : UartMessengerListener {
@@ -27,7 +28,7 @@ open class UartInterfaceManager(
     }
 
     private val messenger =
-        UartMessenger(baudRate, key, uartCheckPeriodMillis, messageStackSize, maxPayloadSize)
+        UartMessenger(serialInterface, key, uartCheckPeriodMillis, messageStackSize, maxPayloadSize)
 
     private val requestsHandler by lazy {
         UartMultiRequestHandler(
