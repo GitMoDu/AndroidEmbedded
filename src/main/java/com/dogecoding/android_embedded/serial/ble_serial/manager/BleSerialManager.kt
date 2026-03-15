@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.content.Context
 import android.util.Log
 import no.nordicsemi.android.ble.BleManager
-import no.nordicsemi.android.ble.data.Data
 import java.util.*
 
 class BleSerialManager(context: Context) : BleManager(context) {
@@ -21,27 +20,29 @@ class BleSerialManager(context: Context) : BleManager(context) {
 
     var dataReceivedCallback: ((ByteArray) -> Unit)? = null
 
-    override fun getGattCallback(): BleManagerGattCallback = object : BleManagerGattCallback() {
-        override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
-            val service = gatt.getService(NUS_SERVICE_UUID)
-            if (service != null) {
-                rxCharacteristic = service.getCharacteristic(NUS_RX_CHARACTERISTIC_UUID)
-                txCharacteristic = service.getCharacteristic(NUS_TX_CHARACTERISTIC_UUID)
-            }
-            return rxCharacteristic != null && txCharacteristic != null
-        }
+    override fun log(priority: Int, message: String) {
+        Log.println(priority, TAG, message)
+    }
 
-        override fun initialize() {
-            setNotificationCallback(txCharacteristic).with { _, data ->
-                data.value?.let { dataReceivedCallback?.invoke(it) }
-            }
-            enableNotifications(txCharacteristic).enqueue()
+    override fun isRequiredServiceSupported(gatt: BluetoothGatt): Boolean {
+        val service = gatt.getService(NUS_SERVICE_UUID)
+        if (service != null) {
+            rxCharacteristic = service.getCharacteristic(NUS_RX_CHARACTERISTIC_UUID)
+            txCharacteristic = service.getCharacteristic(NUS_TX_CHARACTERISTIC_UUID)
         }
+        return rxCharacteristic != null && txCharacteristic != null
+    }
 
-        override fun onServicesInvalidated() {
-            rxCharacteristic = null
-            txCharacteristic = null
+    override fun initialize() {
+        setNotificationCallback(txCharacteristic).with { _, data ->
+            data.value?.let { dataReceivedCallback?.invoke(it) }
         }
+        enableNotifications(txCharacteristic).enqueue()
+    }
+
+    override fun onServicesInvalidated() {
+        rxCharacteristic = null
+        txCharacteristic = null
     }
 
     fun send(data: ByteArray) {
@@ -52,9 +53,5 @@ class BleSerialManager(context: Context) : BleManager(context) {
                 BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
             ).enqueue()
         }
-    }
-
-    override fun log(priority: Int, message: String) {
-        Log.println(priority, TAG, message)
     }
 }
