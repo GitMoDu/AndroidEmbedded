@@ -13,6 +13,10 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -36,6 +40,8 @@ dependencies {
     api(libs.androidx.lifecycle.runtime.ktx)
     api(libs.androidx.lifecycle.viewmodel.ktx)
     api(libs.androidx.fragment.ktx)
+    api(libs.androidx.constraintlayout)
+    api(libs.lottie)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
