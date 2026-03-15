@@ -1,0 +1,9 @@
+package com.dogecoding.android_embedded.uart_interface.usb_serial
+
+interface UsbSerialListener {
+    fun onConnected()
+    fun onDisconnected()
+
+    fun onNewData(data: ByteArray)
+    fun onRunError(e: Exception)
+}
