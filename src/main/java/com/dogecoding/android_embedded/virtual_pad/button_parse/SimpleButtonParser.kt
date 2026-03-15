@@ -13,4 +13,8 @@ class SimpleButtonParser {
             return false
         }
     }
+
+    fun reset() {
+        previousState = false
+    }
 }
