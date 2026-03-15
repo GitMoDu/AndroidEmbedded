@@ -1,6 +1,7 @@
 package com.dogecoding.android_embedded.virtual_pad.controller
 
 import com.dogecoding.android_embedded.virtual_pad.VirtualPad
+import com.dogecoding.android_embedded.virtual_pad.android_pad.VirtualPadMapper
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
@@ -13,7 +14,7 @@ abstract class VirtualPadUpdater(private val updatePeriodMillis: Long) {
 
     private var updateTask: ScheduledFuture<*>? = null
 
-    private val controllerMapper = AndroidVirtualPadMapper()
+    private val controllerMapper = VirtualPadMapper()
     private val inputController = VirtualPad()
 
     fun getElapsedMillisSinceLastUpdate(): Long {

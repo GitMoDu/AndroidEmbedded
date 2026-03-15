@@ -1,17 +1,18 @@
-package com.dogecoding.android_embedded.virtual_pad.controller
+package com.dogecoding.android_embedded.virtual_pad.android_pad
 
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
-import com.dogecoding.android_embedded.uart_interface.usb_serial.TimestampSource.Companion.getMillis
+import com.dogecoding.android_embedded.uart_interface.usb_serial.TimestampSource
 import com.dogecoding.android_embedded.virtual_pad.VirtualPad
 import com.dogecoding.android_embedded.virtual_pad.WriteVirtualPad
+import com.dogecoding.android_embedded.virtual_pad.controller.ControllerInputListener
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 // Thread-safe Android to IController mapper.
 // Listens to native callbacks to update the controller state.
-class AndroidVirtualPadMapper(private val focusedMode: Boolean = true) : ControllerInputListener {
+class VirtualPadMapper(private val focusedMode: Boolean = true) : ControllerInputListener {
 
     companion object {
         val UINT16_MAX: Int = UByte.MAX_VALUE.toInt() * UByte.MAX_VALUE.toInt()
@@ -32,7 +33,7 @@ class AndroidVirtualPadMapper(private val focusedMode: Boolean = true) : Control
     }
 
     fun getElapsedMillisSinceLastUpdate(): Long {
-        return getMillis() - lastUpdate
+        return TimestampSource.getMillis() - lastUpdate
     }
 
     private fun onKeyEvent(keyCode: Int, pressed: Boolean): Boolean {
@@ -134,7 +135,7 @@ class AndroidVirtualPadMapper(private val focusedMode: Boolean = true) : Control
                 }
             }
 
-            lastUpdate = getMillis()
+            lastUpdate = TimestampSource.getMillis()
         }
 
         return handled
@@ -185,7 +186,7 @@ class AndroidVirtualPadMapper(private val focusedMode: Boolean = true) : Control
 
                 writeController.setDPad(dPadY < -0.5f, dPadY > 0.5f, dPadX < -0.5f, dPadX > 0.5f)
 
-                lastUpdate = getMillis()
+                lastUpdate = TimestampSource.getMillis()
             }
             return true
         }
