@@ -141,18 +141,20 @@ class AndroidVirtualPadMapper(private val focusedMode: Boolean = true) : Control
     }
 
     override fun onKeyUpEvent(keyCode: Int, event: KeyEvent): Boolean {
-        if ((event as? KeyEvent)?.source != null && event.source and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD) {
+        if (event.source and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD || event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK) {
             if (event.repeatCount == 0) {
-                return onKeyEvent(keyCode, false)
+                onKeyEvent(keyCode, false)
+                return true
             }
         }
         return false
     }
 
     override fun onKeyDownEvent(keyCode: Int, event: KeyEvent): Boolean {
-        if ((event as? KeyEvent)?.source != null && event.source and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD) {
+        if (event.source and InputDevice.SOURCE_GAMEPAD == InputDevice.SOURCE_GAMEPAD || event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK) {
             if (event.repeatCount == 0) {
-                return onKeyEvent(keyCode, true)
+                onKeyEvent(keyCode, true)
+                return true
             }
         }
         return false
@@ -185,6 +187,7 @@ class AndroidVirtualPadMapper(private val focusedMode: Boolean = true) : Control
 
                 lastUpdate = getMillis()
             }
+            return true
         }
 
         return false
