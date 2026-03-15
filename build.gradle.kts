@@ -42,4 +42,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.usb.serial.for1.android)
+    implementation(libs.nordic.ble)
+    implementation(libs.nordic.ble.ktx)
 }
