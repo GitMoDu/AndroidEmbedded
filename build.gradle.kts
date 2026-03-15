@@ -41,7 +41,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.usb.serial.for1.android)
-    implementation(libs.nordic.ble)
-    implementation(libs.nordic.ble.ktx)
+    api(libs.usb.serial.for1.android)
+    api(libs.nordic.ble)
+    api(libs.nordic.ble.ktx)
 }
