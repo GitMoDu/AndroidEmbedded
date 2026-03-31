@@ -1,6 +1,6 @@
 package com.dogecoding.android_embedded.uart_interface
 
-import android.app.Activity
+import android.content.Context
 import android.util.Log
 import com.dogecoding.android_embedded.serial.SerialInterface
 import com.dogecoding.android_embedded.serial.SerialListener
@@ -15,10 +15,10 @@ import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListene
 @OptIn(ExperimentalUnsignedTypes::class)
 class UartMessenger(
     private val serialInterface: SerialInterface,
-    private val key: UByteArray,
+    key: UByteArray,
     checkPeriodMillis: Long = 2,
-    messageStackSize: Int = 10,
-    maxPayloadSize: Int = 250
+    maxPayloadSize: Int = 250,
+    messageStackSize: Int = 10
 ) : SerialListener {
 
     companion object {
@@ -47,7 +47,8 @@ class UartMessenger(
 
     private val asyncReceiver = object : AbstractUartAsyncReceiver(
         checkPeriodMillis = checkPeriodMillis,
-        messageStackSize = messageStackSize, maxPayloadSize = maxPayloadSize
+        maxPayloadSize = maxPayloadSize,
+        messageStackSize = messageStackSize
     ) {
         override fun onAsyncMessageReceived(header: UByte, payload: UByteArray, payloadSize: Int) {
             synchronized(deliverToken) {
@@ -86,8 +87,8 @@ class UartMessenger(
         serialInterface.disconnect()
     }
 
-    fun connect(activity: Activity) {
-        serialInterface.connect(activity, this)
+    fun connect(context: Context) {
+        serialInterface.connect(context, this)
     }
 
     private fun sendOutMessage(size: Int): Boolean {

@@ -22,7 +22,7 @@ abstract class AbstractUartInterfaceViewModel(
     companion object {
         val TAG: String = AbstractUartInterfaceViewModel::class.java.name
 
-        private val UART_CHECK_PERIOD_MILLIS: Long = 50
+        private const val UART_CHECK_PERIOD_MILLIS: Long = 50
     }
 
     enum class InterfaceState {
@@ -72,23 +72,31 @@ abstract class AbstractUartInterfaceViewModel(
             InterfaceState.UartConnected -> {
                 if (!uartConnected) {
                     setState(InterfaceState.NoDevice)
+                    onInterfaceStop()
                 }
             }
         }
     }
 
+    fun sendMessage(header: UByte, payload: UByteArray? = null): Boolean {
+        return uartMessenger?.sendMessage(header = header, payload = payload) ?: false
+    }
+
     fun startUpdates(activity: Activity, serialInterface: SerialInterface) {
         Log.d(TAG, "Start check task")
 
-        if (uartMessenger == null) {
-            uartMessenger = UartMessenger(
-                serialInterface = serialInterface,
-                key = messengerKey,
-                checkPeriodMillis = messengerCheckPeriodMillis,
-                messageStackSize = messengerMessageStackSize,
-                maxPayloadSize = messengerMaxPayloadSize
-            )
+        // Stop any existing updates first to ensure clean state
+        if (uartMessenger != null) {
+            stopUpdates()
         }
+
+        uartMessenger = UartMessenger(
+            serialInterface = serialInterface,
+            key = messengerKey,
+            checkPeriodMillis = messengerCheckPeriodMillis,
+            messageStackSize = messengerMessageStackSize,
+            maxPayloadSize = messengerMaxPayloadSize
+        )
 
         setState(InterfaceState.NoDevice)
         checkTask?.cancel(false)
@@ -146,18 +154,13 @@ abstract class AbstractUartInterfaceViewModel(
     fun stopUpdates() {
         Log.d(TAG, "Stop check task and Messenger")
         checkTask?.cancel(false)
+        checkTask = null
+
         uartMessenger?.disconnect()
+        uartMessenger = null
 
-        when (getState()) {
-            InterfaceState.Disabled -> {
-            }
-
-            InterfaceState.NoDevice -> {
-            }
-
-            InterfaceState.UartConnected -> {
-                onInterfaceStop()
-            }
+        if (getState() == InterfaceState.UartConnected) {
+            onInterfaceStop()
         }
 
         setState(InterfaceState.Disabled)
