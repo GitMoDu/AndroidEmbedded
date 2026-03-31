@@ -30,6 +30,10 @@ class VirtualPadViewModel : ViewModel() {
         return handled
     }
 
+    fun isConnected() : Boolean{
+        return tempPad.getConnected()
+    }
+
     private fun updateControllerStatus() {
         mapper.getVirtualPadNow(tempPad)
         if (!tempPad.getConnected()) {

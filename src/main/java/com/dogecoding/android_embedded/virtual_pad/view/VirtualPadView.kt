@@ -39,17 +39,20 @@ class VirtualPadView @JvmOverloads constructor(
         val width = width.toFloat()
         val height = height.toFloat()
 
-        // Draw Joysticks
-        drawJoystick(canvas, 150f, height / 2, pad.getJoy1X(), pad.getJoy1Y(), "L")
-        drawJoystick(canvas, width - 150f, height / 2, pad.getJoy2X(), pad.getJoy2Y(), "R")
+        // Calculate vertical positions to use the full height of the view
+        // Triggers are at the top, D-Pad/Buttons in the middle, Joysticks at the bottom.
+        val joystickY = height - 160f
+        val buttonsY = height / 2f
 
-        // Draw D-Pad
-        drawDPad(canvas, 350f, height / 2, pad)
+        // Draw Joysticks at the bottom (with margin for label)
+        drawJoystick(canvas, 150f, joystickY, pad.getJoy1X(), pad.getJoy1Y(), "L")
+        drawJoystick(canvas, width - 150f, joystickY, pad.getJoy2X(), pad.getJoy2Y(), "R")
 
-        // Draw Face Buttons
-        drawFaceButtons(canvas, width - 350f, height / 2, pad)
+        // Draw D-Pad and Buttons in the center
+        drawDPad(canvas, 350f, buttonsY, pad)
+        drawFaceButtons(canvas, width - 350f, buttonsY, pad)
 
-        // Draw Triggers
+        // Draw Triggers at the top
         drawTriggers(canvas, width, pad)
     }
 
@@ -63,7 +66,8 @@ class VirtualPadView @JvmOverloads constructor(
         paint.color = Color.RED
         canvas.drawCircle(cx + jx, cy + jy, 20f, paint)
 
-        paint.color = Color.BLACK
+        // Use a neutral gray for labels to ensure visibility on both light and dark themes
+        paint.color = Color.DKGRAY
         canvas.drawText(label, cx - 10f, cy + radius + 40f, paint)
     }
 
