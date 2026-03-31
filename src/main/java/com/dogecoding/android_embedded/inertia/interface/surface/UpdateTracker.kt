@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.lola.surface
+package com.dogecoding.android_embedded.inertia.`interface`.surface
 
 class UpdateTracker(private val updatePeriod: Long) {
     private var updating: Boolean = false

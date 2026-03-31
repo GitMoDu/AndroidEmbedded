@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.lola.surface.model
+package com.dogecoding.android_embedded.inertia.`interface`.surface.model
 
 
 // Generic surface interface.
@@ -8,6 +8,10 @@ abstract class Surface(private val blockCount: Int) {
     companion object {
         // Bytes in block
         const val BLOCK_SIZE: Int = 8
+
+        fun getPayloadSize(blockCount: Int): Int {
+            return blockCount * BLOCK_SIZE
+        }
     }
 
     protected val arrayOut = UByteArray(getPayloadSize())
