@@ -1,77 +1,128 @@
 package com.dogecoding.android_embedded.serial.ble_serial
 
-import android.app.Activity
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothProfile
+import android.content.Context
 import android.util.Log
-import com.dogecoding.android_embedded.serial.ble_serial.manager.BleSerialManager
 import com.dogecoding.android_embedded.serial.SerialInterface
 import com.dogecoding.android_embedded.serial.SerialListener
-import no.nordicsemi.android.ble.ktx.stateAsFlow
-import kotlinx.coroutines.*
+import com.dogecoding.android_embedded.serial.ble_serial.manager.AbstractBleSerialManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import no.nordicsemi.android.ble.ktx.state.ConnectionState
+import no.nordicsemi.android.ble.ktx.stateAsFlow
+import java.util.Collections
 
 @OptIn(ExperimentalUnsignedTypes::class)
-class BleSerial(private val device: BluetoothDevice) : SerialInterface {
+class BleSerial<T : AbstractBleSerialManager>(
+    private val device: BluetoothDevice,
+    val manager: T,
+    private val onStateChanged: ((isConnected: Boolean, isConnecting: Boolean) -> Unit)? = null,
+    private val onRssiChanged: ((Int) -> Unit)? = null,
+    private val onDisconnectedCallback: (() -> Unit)? = null
+) : SerialInterface {
 
     companion object {
         private val TAG = BleSerial::class.java.simpleName
     }
 
-    private var manager: BleSerialManager? = null
-    private var serialListener: SerialListener? = null
+    private val listeners = Collections.synchronizedSet(mutableSetOf<SerialListener>())
     private var connectionScope: CoroutineScope? = null
 
     override fun isConnected(): Boolean {
-        return manager?.isConnected == true
+        return manager.isReady
     }
 
     override fun isConnecting(): Boolean {
-        return manager?.isReady == false && manager?.isConnected == true // Simplified
+        val s = manager.getConnectionState()
+        return !manager.isReady && (s == BluetoothProfile.STATE_CONNECTING || s == BluetoothProfile.STATE_CONNECTED)
     }
 
-    override fun connect(activity: Activity, serialListener: SerialListener) {
-        this.serialListener = serialListener
-        val context = activity.applicationContext
-        manager = BleSerialManager(context)
+    override fun connect(context: Context, serialListener: SerialListener) {
+        listeners.add(serialListener)
         
-        manager?.dataReceivedCallback = { data ->
-            serialListener.onNewData(data)
+        // Ensure the new listener gets an immediate 'connected' callback if we are already ready
+        if (isConnected()) {
+            serialListener.onConnected()
         }
 
+        if (isConnected() || isConnecting()) {
+            Log.d(TAG, "Connect ignored: already connected or connecting")
+            // Ensure state is synced even if connection is already established
+            onStateChanged?.invoke(isConnected(), isConnecting())
+            return
+        }
+        
+        manager.dataReceivedCallback = { data ->
+            synchronized(listeners) {
+                listeners.forEach { it.onNewData(data) }
+            }
+        }
+        manager.rssiCallback = { rssi ->
+            onRssiChanged?.invoke(rssi)
+        }
+
+        connectionScope?.cancel()
         connectionScope = CoroutineScope(Dispatchers.Main + Job())
         
-        manager?.connect(device)
-            ?.useAutoConnect(true)
-            ?.retry(3, 100)
-            ?.enqueue()
+        Log.d(TAG, "Connecting to ${device.address}")
+        manager.connect(device)
+            .retry(3, 500)
+            .enqueue()
+
+        // Notify immediate state change (will likely be 'Connecting')
+        onStateChanged?.invoke(isConnected(), isConnecting())
 
         // Monitor state
-        manager?.stateAsFlow()?.onEach { state ->
+        manager.stateAsFlow().onEach { state ->
+            onStateChanged?.invoke(isConnected(), isConnecting())
+            
             when (state) {
                 is ConnectionState.Ready -> {
                     Log.d(TAG, "BLE Connected and Ready")
-                    serialListener.onConnected()
+                    synchronized(listeners) {
+                        listeners.forEach { it.onConnected() }
+                    }
                 }
                 is ConnectionState.Disconnected -> {
                     Log.d(TAG, "BLE Disconnected")
-                    serialListener.onDisconnected()
+                    synchronized(listeners) {
+                        listeners.forEach { it.onDisconnected() }
+                    }
+                    onDisconnectedCallback?.invoke()
                     connectionScope?.cancel()
                 }
                 else -> {}
             }
-        }?.launchIn(connectionScope!!)
+        }.launchIn(connectionScope!!)
+    }
+
+    override fun removeListener(serialListener: SerialListener) {
+        listeners.remove(serialListener)
     }
 
     override fun disconnect() {
-        manager?.disconnect()?.enqueue()
+        Log.d(TAG, "Disconnecting from ${device.address}")
+        manager.let {
+            it.disconnect().enqueue()
+            it.close()
+        }
         connectionScope?.cancel()
-        manager = null
+        onStateChanged?.invoke(false, false)
+        
+        // We notify and clear listeners on explicit disconnect
+        synchronized(listeners) {
+            listeners.forEach { it.onDisconnected() }
+            listeners.clear()
+        }
     }
 
     override fun serialWrite(value: UByte) {
-        manager?.send(byteArrayOf(value.toByte()))
+        manager.send(byteArrayOf(value.toByte()))
     }
 
     override fun serialWrite(data: UByteArray, size: Int) {
@@ -79,6 +130,10 @@ class BleSerial(private val device: BluetoothDevice) : SerialInterface {
         for (i in 0 until size) {
             bytes[i] = data[i].toByte()
         }
-        manager?.send(bytes)
+        manager.send(bytes)
+    }
+
+    fun requestRssi() {
+        manager.requestRssi()
     }
 }

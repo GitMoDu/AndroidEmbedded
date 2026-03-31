@@ -1,6 +1,5 @@
 package com.dogecoding.android_embedded.serial.usb_serial
 
-import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -70,14 +69,12 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener, 
         return connecting
     }
 
-    override fun connect(activity: Activity, serialListener: SerialListener) {
+    override fun connect(context: Context, serialListener: SerialListener) {
         if (!connecting) {
             connecting = true
         }
 
         this.serialListener = serialListener
-        val context: Context = activity.applicationContext
-
         val usbManager = getUsbManager(context)
 
         serialDevice = getFirstDevice(context)
@@ -98,7 +95,7 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener, 
         ) {
             serialDevice!!.permissionsGranted = false
             val flags = PendingIntent.FLAG_MUTABLE
-            val intent: Intent = Intent(getIntent(activity.application.packageName))
+            val intent: Intent = Intent(getIntent(context.packageName))
             intent.setPackage(context.packageName)
             val usbPermissionIntent = PendingIntent.getBroadcast(context, 0, intent, flags)
             usbManager.requestPermission(driver.device, usbPermissionIntent)
@@ -147,6 +144,12 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener, 
         } catch (e: Exception) {
             Log.d(TAG, "connection failed: " + e.message)
             disconnect()
+        }
+    }
+
+    override fun removeListener(serialListener: SerialListener) {
+        if (this.serialListener == serialListener) {
+            this.serialListener = null
         }
     }
 

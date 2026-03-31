@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.le.ScanFilter
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Build
@@ -28,7 +29,11 @@ import com.dogecoding.android_core.extension.visible
 import com.dogecoding.android_embedded.R
 import com.dogecoding.android_embedded.databinding.DialogBleConnectBinding
 
-class BleConnectDialog : DialogFragment() {
+class BleConnectDialog(
+    private val filters: List<ScanFilter> = listOf(),
+    private val scanOnShow: Boolean = false,
+    private val onDeviceSelected: ((BluetoothDevice, Boolean) -> Unit)? = null
+) : DialogFragment() {
 
     companion object {
         const val FADE_DURATION: Long = 300
@@ -49,7 +54,7 @@ class BleConnectDialog : DialogFragment() {
     ) { permissions ->
         val granted = permissions.entries.all { it.value }
         if (granted) {
-            bleSerialViewModel.startScan()
+            bleSerialViewModel.startScan(filters)
         } else {
             Toast.makeText(
                 requireContext(),
@@ -66,7 +71,12 @@ class BleConnectDialog : DialogFragment() {
         buttonStopText = getString(R.string.ble_scan_stop)
 
         deviceAdapter = DeviceAdapter { device ->
-            bleSerialViewModel.connect(device)
+            val remember = binding.rememberDeviceCheckbox.isChecked
+            if (onDeviceSelected != null) {
+                onDeviceSelected.invoke(device, remember)
+            } else {
+                bleSerialViewModel.connect(device)
+            }
             dismiss()
         }
 
@@ -115,6 +125,13 @@ class BleConnectDialog : DialogFragment() {
         bleSerialViewModel.stopScan()
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (scanOnShow) {
+            bleSerialViewModel.startScan(filters)
+        }
+    }
+
     private fun checkAndStartScan() {
         val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             arrayOf(
@@ -133,7 +150,7 @@ class BleConnectDialog : DialogFragment() {
         }
 
         if (missingPermissions.isEmpty()) {
-            bleSerialViewModel.startScan()
+            bleSerialViewModel.startScan(filters)
             binding.scanButton.text = buttonStopText
             binding.scanButton.isEnabled = true
         } else {
