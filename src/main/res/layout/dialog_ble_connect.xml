@@ -42,14 +42,16 @@
         app:lottie_rawRes="@raw/animation_scanning_circular"
         tools:visibility="visible" />
 
-    <CheckBox
+    <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/remember_device_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
+        android:checked="true"
         android:text="@string/ble_scan_remember_this_device"
         android:textColor="@color/foreground"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/dialog_buttons_group"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -59,7 +61,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/cancel_button"
             style="?attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
@@ -73,7 +75,7 @@
             app:layout_constraintEnd_toStartOf="@+id/scan_button"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/scan_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -7,4 +7,8 @@
     <string name="ble_scan_permissions_required">Permissions required for BLE scanning</string>
     <string name="ble_scan_unknown_device">Unknown Device</string>
     <string name="ble_scan_connect_to_ble_serial">Connect to BLE Serial</string>
+
+    <string name="serial_debug_loopback">Loopback</string>
+    <string name="serial_debug_periodic">Periodic Send</string>
+    <string name="serial_debug_clear">Clear</string>
 </resources>
