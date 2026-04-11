@@ -53,7 +53,7 @@ class Cobs {
             }
 
             // We've reached the end of the source data (or possibly run out of output buffer).
-            // Finalise the remaining output. In particular, write the code (length) byte.
+            // Finalize the remaining output. In particular, write the code (length) byte.
             // Update the pointer to calculate the final output length.
             if (targetCodeWriteCounter > size) {
                 // We've run out of output buffer to write the code byte.
