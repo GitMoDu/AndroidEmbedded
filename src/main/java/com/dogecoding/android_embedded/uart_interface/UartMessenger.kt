@@ -145,9 +145,11 @@ class UartMessenger(
 
             if (decodedSize == size - 1) {
                 parseMessage(inMessage, size - 1)
+            } else {
+                Log.d(TAG, "COBS decode size mismatch: expected ${size - 1}, got $decodedSize")
             }
         } else {
-            Log.d(TAG, "Invalid COBS framing")
+            Log.d(TAG, "Invalid packet size: $size (Min: $MinMessageSize)")
         }
     }
 

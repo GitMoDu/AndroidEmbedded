@@ -69,7 +69,7 @@ abstract class AbstractUartInterface(
     }
 
     override fun onMessageReceived(header: UByte, payload: UByteArray?) {
-//        Log.d(TAG, "Message received")
+        Log.d(TAG, "Message received")
     }
 
     protected fun sendMessage(header: Int, payload: UByteArray? = null): Boolean {

@@ -2,10 +2,13 @@ package com.dogecoding.android_embedded.uart_interface
 
 import android.util.Log
 import com.dogecoding.android_embedded.uart_interface.UartMessenger.Companion.PacketEndMarker
-import com.dogecoding.android_embedded.uart_interface.model.Message.Companion.TAG
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class UartParser {
+    companion object {
+        private val TAG: String = UartParser::class.java.name
+    }
+
     enum class StateEnum {
         WaitingForStart,
         WaitingForData,
@@ -24,16 +27,14 @@ class UartParser {
         when (state) {
             StateEnum.WaitingForStart -> {
                 if (value == PacketEndMarker) {
-                    if (value == PacketEndMarker) {
-                        state = StateEnum.WaitingForData
-                        inSize = 0
-                    }
+                    state = StateEnum.WaitingForData
+                    inSize = 0
                 }
             }
 
             StateEnum.WaitingForData -> {
                 if (value == PacketEndMarker) {
-                    Log.d(TAG, "Repeated delimiter detected.")
+                    // Skip repeated delimiters silently
                 } else {
                     state = StateEnum.ReadingData
                     inSize = 0
@@ -43,14 +44,17 @@ class UartParser {
 
             StateEnum.ReadingData -> {
                 if (value == PacketEndMarker) {
+                    val finalSize = inSize
                     state = StateEnum.WaitingForStart
-                    return inSize
+                    inSize = 0
+                    return finalSize
                 } else {
-                    inBuffer[inSize++] = value
-                    if (inSize >= inBuffer.size) {
+                    if (inSize < inBuffer.size) {
+                        inBuffer[inSize++] = value
+                    } else {
+                        Log.w(TAG, "Buffer overflow - packet too large, resetting.")
                         state = StateEnum.WaitingForStart
                         inSize = 0
-                        Log.d(TAG, "Sync error.")
                     }
                 }
             }
