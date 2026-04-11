@@ -26,6 +26,15 @@ class VirtualPadMapper(private val focusedMode: Boolean = true) : ControllerInpu
 
     private var lastUpdate: Long = 0
 
+    fun updateConnectionStatus(connected: Boolean) {
+        synchronized(token) {
+            writeController.setConnected(connected)
+            if (!connected) {
+                writeController.clear()
+            }
+        }
+    }
+
     fun getVirtualPadNow(virtualPad: VirtualPad) {
         synchronized(token) {
             virtualPad.copyFrom(writeController.getState())
@@ -39,9 +48,6 @@ class VirtualPadMapper(private val focusedMode: Boolean = true) : ControllerInpu
     private fun onKeyEvent(keyCode: Int, pressed: Boolean): Boolean {
         var handled = true
         synchronized(token) {
-            if (!writeController.getConnected()) {
-                writeController.setConnected(true)
-            }
             when (keyCode) {
                 KeyEvent.KEYCODE_DPAD_UP -> {
                     writeController.setDPad(
@@ -164,10 +170,6 @@ class VirtualPadMapper(private val focusedMode: Boolean = true) : ControllerInpu
     override fun onGenericMotionEvent(event: MotionEvent): Boolean {
         if (event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK && event.action == MotionEvent.ACTION_MOVE) {
             synchronized(token) {
-                if (!writeController.getConnected()) {
-                    writeController.setConnected(true)
-                }
-
                 writeController.setJoy1(
                     getCenteredShort(event, event.device, MotionEvent.AXIS_X),
                     getCenteredShort(event, event.device, MotionEvent.AXIS_Y)

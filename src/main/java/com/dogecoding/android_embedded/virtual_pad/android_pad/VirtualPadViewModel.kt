@@ -50,6 +50,7 @@ class VirtualPadViewModel : ViewModel() {
     fun updateControllerInfo(info: ControllerInfo?) {
         if (gamepadInfo.value != info) {
             gamepadInfo.postValue(info)
+            mapper.updateConnectionStatus(info != null)
         }
     }
 }
