@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.legacy.kapt)
@@ -12,6 +14,17 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        // MSAL Activity must include MSAL Activity in placeholder.
+        // as well as msal.path=Base64-encoded-signature-hash in local.properties.
+//        val properties = Properties()
+//        val localPropertiesFile = project.rootProject.file("local.properties")
+//        if (localPropertiesFile.exists()) {
+//            localPropertiesFile.inputStream().use { properties.load(it) }
+//        }
+//        val msalPath = properties.getProperty("msal.path")
+//            ?: throw GradleException("msal.path not found in local.properties")
+//        manifestPlaceholders["msalPath"] = msalPath
     }
 
     buildFeatures {
