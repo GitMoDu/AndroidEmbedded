@@ -1,12 +1,12 @@
-package com.dogecoding.android_embedded.serial.ble_serial
+package com.dogecoding.android_embedded.serial.interfaces.ble_serial
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.util.Log
-import com.dogecoding.android_embedded.serial.SerialInterface
-import com.dogecoding.android_embedded.serial.SerialListener
-import com.dogecoding.android_embedded.serial.ble_serial.manager.AbstractBleSerialManager
+import com.dogecoding.android_embedded.serial.model.SerialInterface
+import com.dogecoding.android_embedded.serial.model.SerialListener
+import com.dogecoding.android_embedded.serial.interfaces.ble_serial.manager.AbstractBleSerialManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

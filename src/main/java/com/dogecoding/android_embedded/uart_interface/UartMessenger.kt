@@ -2,8 +2,8 @@ package com.dogecoding.android_embedded.uart_interface
 
 import android.content.Context
 import android.util.Log
-import com.dogecoding.android_embedded.serial.SerialInterface
-import com.dogecoding.android_embedded.serial.SerialListener
+import com.dogecoding.android_embedded.serial.model.SerialInterface
+import com.dogecoding.android_embedded.serial.model.SerialListener
 import com.dogecoding.android_embedded.uart_interface.async.AbstractUartAsyncReceiver
 import com.dogecoding.android_embedded.uart_interface.codec.Cobs
 import com.dogecoding.android_embedded.uart_interface.codec.UartCrc

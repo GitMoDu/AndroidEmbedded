@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.serial
+package com.dogecoding.android_embedded.serial.model
 
 interface SerialListener {
     fun onConnected()

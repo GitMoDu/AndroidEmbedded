@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.serial.usb_serial
+package com.dogecoding.android_embedded.serial.interfaces.usb_serial
 
 import android.app.PendingIntent
 import android.content.Context
@@ -6,8 +6,8 @@ import android.content.Intent
 import android.hardware.usb.UsbManager
 import android.os.Process
 import android.util.Log
-import com.dogecoding.android_embedded.serial.SerialInterface
-import com.dogecoding.android_embedded.serial.SerialListener
+import com.dogecoding.android_embedded.serial.model.SerialInterface
+import com.dogecoding.android_embedded.serial.model.SerialListener
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber

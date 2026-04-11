@@ -2,8 +2,8 @@ package com.dogecoding.android_embedded.serial.view
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dogecoding.android_embedded.serial.SerialInterface
-import com.dogecoding.android_embedded.serial.SerialListener
+import com.dogecoding.android_embedded.serial.model.SerialInterface
+import com.dogecoding.android_embedded.serial.model.SerialListener
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

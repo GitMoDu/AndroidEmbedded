@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.serial.ble_serial
+package com.dogecoding.android_embedded.serial.interfaces.ble_serial
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -29,14 +29,26 @@ import com.dogecoding.android_core.extension.visible
 import com.dogecoding.android_embedded.R
 import com.dogecoding.android_embedded.databinding.DialogBleConnectBinding
 
-class BleConnectDialog(
-    private val filters: List<ScanFilter> = listOf(),
-    private val scanOnShow: Boolean = false,
-    private val onDeviceSelected: ((BluetoothDevice, Boolean) -> Unit)? = null
-) : DialogFragment() {
+class BleConnectDialog : DialogFragment() {
+
+    private var filters: List<ScanFilter> = listOf()
+    private var scanOnShow: Boolean = false
+    private var onDeviceSelected: ((BluetoothDevice, Boolean) -> Unit)? = null
 
     companion object {
         const val FADE_DURATION: Long = 300
+
+        fun newInstance(
+            filters: List<ScanFilter> = listOf(),
+            scanOnShow: Boolean = false,
+            onDeviceSelected: ((BluetoothDevice, Boolean) -> Unit)? = null
+        ): BleConnectDialog {
+            val fragment = BleConnectDialog()
+            fragment.filters = filters
+            fragment.scanOnShow = scanOnShow
+            fragment.onDeviceSelected = onDeviceSelected
+            return fragment
+        }
     }
 
     private var _binding: DialogBleConnectBinding? = null
@@ -72,9 +84,9 @@ class BleConnectDialog(
 
         deviceAdapter = DeviceAdapter { device ->
             val remember = binding.rememberDeviceCheckbox.isChecked
-            if (onDeviceSelected != null) {
-                onDeviceSelected.invoke(device, remember)
-            } else {
+            onDeviceSelected?.let {
+                it.invoke(device, remember)
+            } ?: run {
                 bleSerialViewModel.connect(device)
             }
             dismiss()

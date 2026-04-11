@@ -1,9 +1,10 @@
-package com.dogecoding.android_embedded.serial.ble_serial.manager
+package com.dogecoding.android_embedded.serial.interfaces.ble_serial.manager.managers
 
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.le.ScanFilter
 import android.content.Context
 import android.os.ParcelUuid
+import com.dogecoding.android_embedded.serial.interfaces.ble_serial.manager.AbstractBleSerialManager
 import java.util.UUID
 
 /**

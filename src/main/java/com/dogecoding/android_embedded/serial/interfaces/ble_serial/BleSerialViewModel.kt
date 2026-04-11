@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.serial.ble_serial
+package com.dogecoding.android_embedded.serial.interfaces.ble_serial
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -16,12 +16,15 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.dogecoding.android_embedded.serial.ble_serial.manager.AbstractBleSerialManager
-import com.dogecoding.android_embedded.serial.ble_serial.manager.NusBleSerialManager
-import com.dogecoding.android_embedded.serial.ble_serial.manager.Vollgo6328SerialManager
+import com.dogecoding.android_embedded.serial.interfaces.ble_serial.manager.AbstractBleSerialManager
+import com.dogecoding.android_embedded.serial.interfaces.ble_serial.manager.managers.NusBleSerialManager
+import com.dogecoding.android_embedded.serial.interfaces.ble_serial.manager.managers.Vollgo6328SerialManager
+import com.dogecoding.android_embedded.serial.interfaces.ble_serial.preferences.BleSerialPreferences
 
 @SuppressLint("MissingPermission")
 class BleSerialViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val preferences = BleSerialPreferences(application)
 
     enum class ConnectionState {
         DISCONNECTED, CONNECTING, CONNECTED
@@ -146,10 +149,17 @@ class BleSerialViewModel(application: Application) : AndroidViewModel(applicatio
         handler.removeCallbacks(rssiRunnable)
     }
 
-    fun connect(device: BluetoothDevice): BleSerial<*> {
+    fun connect(device: BluetoothDevice, remember: Boolean = false): BleSerial<*> {
+        if (remember) {
+            preferences.saveLastDeviceAddress(device.address)
+        }
         val manager = createManager(device)
         return connect(device, manager)
     }
+
+    fun getLastDeviceAddress(): String? = preferences.getLastDeviceAddress()
+
+    fun clearSavedDevice() = preferences.clearDevice()
 
     fun <T : AbstractBleSerialManager> connect(
         device: BluetoothDevice,

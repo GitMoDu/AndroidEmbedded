@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.serial.ble_serial.manager
+package com.dogecoding.android_embedded.serial.interfaces.ble_serial.manager
 
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic

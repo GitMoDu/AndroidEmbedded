@@ -1,6 +1,7 @@
-package com.dogecoding.android_embedded.serial
+package com.dogecoding.android_embedded.serial.model
 
 import android.content.Context
+import com.dogecoding.android_embedded.serial.model.SerialListener
 
 interface SerialInterface {
     fun isConnected(): Boolean

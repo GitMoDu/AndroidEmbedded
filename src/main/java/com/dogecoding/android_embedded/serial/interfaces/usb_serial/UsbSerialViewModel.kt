@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.serial.usb_serial
+package com.dogecoding.android_embedded.serial.interfaces.usb_serial
 
 import android.app.Activity
 import android.app.Application
@@ -13,7 +13,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.dogecoding.android_embedded.serial.SerialListener
+import com.dogecoding.android_embedded.serial.model.SerialListener
 import com.hoho.android.usbserial.driver.UsbSerialProber
 
 class UsbSerialViewModel(application: Application) : AndroidViewModel(application) {

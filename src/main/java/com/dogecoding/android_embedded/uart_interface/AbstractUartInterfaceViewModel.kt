@@ -3,7 +3,7 @@ package com.dogecoding.android_embedded.uart_interface
 import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.dogecoding.android_embedded.serial.SerialInterface
+import com.dogecoding.android_embedded.serial.model.SerialInterface
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
