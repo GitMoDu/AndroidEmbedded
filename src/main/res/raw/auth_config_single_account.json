@@ -1,0 +1,16 @@
+{
+  "client_id": "YOUR_CLIENT_ID_FROM_ENTRA",
+  "authorization_user_agent": "DEFAULT",
+  "account_mode": "SINGLE",
+  "redirect_uri": "msauth://com.domain.app/YOUR_BASE64_HASH",
+  "authorities": [
+    {
+      "type": "AAD",
+      "audience": {
+        "type": "AzureADandPersonalMicrosoftAccount",
+        "tenant_id": "common"
+      },
+      "default": true
+    }
+  ]
+}

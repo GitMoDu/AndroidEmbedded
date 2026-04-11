@@ -12,4 +12,11 @@
     <string name="serial_debug_loopback">Loopback</string>
     <string name="serial_debug_periodic">Periodic Send</string>
     <string name="serial_debug_clear">Clear</string>
+
+
+    <string name="onedrive_sign_in">Sign in with OneDrive</string>
+    <string name="google_sign_in">Sign in with Google</string>
+    <string name="google_server_client_id">PLACE_HOLDER</string>
+
+    <!-- <string name="google_server_client_id">PASTE_YOUR_WEB_CLIENT_ID_HERE</string> -->
 </resources>

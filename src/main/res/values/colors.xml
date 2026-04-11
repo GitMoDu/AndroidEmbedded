@@ -8,6 +8,15 @@
 
     <color name="ble_scanning">#10000000</color>
 
+    <color name="google_blue">#4285F4</color>
+    <color name="google_red">#EA4335</color>
+    <color name="google_yellow">#FBBC05</color>
+    <color name="google_green">#34A853</color>
+
+    <color name="onedrive_blue_dark">#0086FF</color>
+    <color name="onedrive_blue">#00BBFF</color>
+
+
     <color name="log_text">#00FF00</color>
     <color name="log_text_secondary">@color/foreground</color>
     <color name="log_text_warning">#FFFFC107</color>
