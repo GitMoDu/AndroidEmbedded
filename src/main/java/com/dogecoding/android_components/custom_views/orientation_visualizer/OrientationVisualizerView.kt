@@ -72,6 +72,16 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
     }
 
     /**
+     * Updates the lighting parameters.
+     * @param lightDir The direction of the light source [x, y, z].
+     * @param lightColor The color of the light [r, g, b].
+     * @param ambient The ambient light strength (0.0 to 1.0).
+     */
+    fun updateLighting(lightDir: FloatArray? = null, lightColor: FloatArray? = null, ambient: Float? = null) {
+        renderer.setLighting(lightDir, lightColor, ambient)
+    }
+
+    /**
      * Loads an OBJ model from a raw resource.
      * Loading is deferred to the GL thread to ensure a valid context.
      */
@@ -95,6 +105,10 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
         private var centerX = 0f
         private var centerY = 0f
         private var centerZ = 0f
+
+        private var lightDir = floatArrayOf(-1.0f, 1.0f, 1.0f)
+        private var lightColor = floatArrayOf(1.0f, 1.0f, 0.95f)
+        private var ambient = 0.3f
 
         private var model: GLESModel? = null
         private var pendingResId: Int? = null
@@ -136,6 +150,12 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
             centerX = cx
             centerY = cy
             centerZ = cz
+        }
+
+        fun setLighting(dir: FloatArray?, color: FloatArray?, amb: Float?) {
+            dir?.let { lightDir = it }
+            color?.let { lightColor = it }
+            amb?.let { ambient = it }
         }
 
         override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
@@ -181,7 +201,7 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
 
             val mvpMatrix = FloatArray(16)
             Matrix.multiplyMM(mvpMatrix, 0, vPMatrix, 0, modelMatrix, 0)
-            model?.draw(mvpMatrix, modelMatrix, modelAlpha)
+            model?.draw(mvpMatrix, modelMatrix, modelAlpha, lightDir, lightColor, ambient)
         }
 
         override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -212,15 +232,17 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
                 "#version 300 es\n" +
                 "precision mediump float;\n" +
                 "uniform float uAlpha;\n" +
+                "uniform vec3 uLightDir;\n" +
+                "uniform vec3 uLightColor;\n" +
+                "uniform float uAmbient;\n" +
                 "in vec4 vVaryingColor;\n" +
                 "in vec3 vTransformedNormal;\n" +
                 "out vec4 fragColor;\n" +
                 "void main() {\n" +
                 "  vec3 normal = normalize(vTransformedNormal);\n" +
-                "  vec3 lightDir = normalize(vec3(1.0, 1.0, -1.0));\n" +
-                "  float diffuse = max(dot(normal, lightDir), 0.0);\n" +
-                "  float ambient = 0.1;\n" +
-                "  fragColor = vec4(vVaryingColor.rgb * (diffuse + ambient), vVaryingColor.a * uAlpha);\n" +
+                "  float diffuse = max(dot(normal, normalize(uLightDir)), 0.0);\n" +
+                "  vec3 finalColor = vVaryingColor.rgb * (diffuse * uLightColor + uAmbient);\n" +
+                "  fragColor = vec4(finalColor, vVaryingColor.a * uAlpha);\n" +
                 "}\n"
         }
 
@@ -361,7 +383,7 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
 
             val colors = FloatArray((vertices.size / 3) * 4) { i ->
                 when (i % 4) {
-                    0 -> 0.4f; 1 -> 0.7f; 2 -> 1.0f; else -> 1.0f
+                    0 -> 0.85f; 1 -> 0.85f; 2 -> 0.85f; else -> 1.0f
                 }
             }
             setupBuffers(normalized, colors, indices.toShortArray())
@@ -413,7 +435,7 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
             }
         }
 
-        fun draw(mvpMatrix: FloatArray, modelMatrix: FloatArray, alpha: Float) {
+        fun draw(mvpMatrix: FloatArray, modelMatrix: FloatArray, alpha: Float, lightDir: FloatArray, lightColor: FloatArray, ambient: Float) {
             if (program == 0 || drawCount == 0 || vaoId == 0) return
             GLES30.glUseProgram(program)
 
@@ -425,6 +447,15 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
 
             val alphaHandle = GLES30.glGetUniformLocation(program, "uAlpha")
             GLES30.glUniform1f(alphaHandle, alpha)
+
+            val lightDirHandle = GLES30.glGetUniformLocation(program, "uLightDir")
+            GLES30.glUniform3fv(lightDirHandle, 1, lightDir, 0)
+
+            val lightColorHandle = GLES30.glGetUniformLocation(program, "uLightColor")
+            GLES30.glUniform3fv(lightColorHandle, 1, lightColor, 0)
+
+            val ambientHandle = GLES30.glGetUniformLocation(program, "uAmbient")
+            GLES30.glUniform1f(ambientHandle, ambient)
 
             GLES30.glBindVertexArray(vaoId)
             GLES30.glDrawElements(GLES30.GL_TRIANGLES, drawCount, GLES30.GL_UNSIGNED_SHORT, 0)
