@@ -1,4 +1,4 @@
-package com.dogecoding.android_core.custom_views.orientation_visualizer
+package com.dogecoding.android_components.custom_views.orientation_visualizer
 
 import android.content.Context
 import android.graphics.PixelFormat
