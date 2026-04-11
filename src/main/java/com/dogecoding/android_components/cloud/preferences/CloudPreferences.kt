@@ -2,9 +2,9 @@ package com.dogecoding.android_components.cloud.preferences
 
 import android.content.Context
 import androidx.core.content.edit
-import com.dogecoding.android_core.shared_preferences.SecurePreferences
+import com.dogecoding.android_core.shared_preferences.TinkSharedPreferences
 
-class CloudPreferences(context: Context) : SecurePreferences(context, PREFS_NAME) {
+class CloudPreferences(context: Context) : TinkSharedPreferences(context, PREFS_NAME) {
 
     companion object {
         private const val PREFS_NAME = "cloud_preferences"
@@ -19,43 +19,43 @@ class CloudPreferences(context: Context) : SecurePreferences(context, PREFS_NAME
     }
 
     fun saveCloudProvider(provider: String) {
-        sharedPreferences.edit { putString(KEY_CLOUD_PROVIDER, provider) }
+        edit().putString(KEY_CLOUD_PROVIDER, provider).apply()
     }
 
     fun getCloudProvider(): String {
-        return sharedPreferences.getString(KEY_CLOUD_PROVIDER, PROVIDER_NONE) ?: PROVIDER_NONE
+        return getString(KEY_CLOUD_PROVIDER, PROVIDER_NONE) ?: PROVIDER_NONE
     }
 
     fun saveCloudUsername(username: String?) {
-        sharedPreferences.edit { putString(KEY_CLOUD_USERNAME, username) }
+        edit().putString(KEY_CLOUD_USERNAME, username).apply()
     }
 
     fun getCloudUsername(): String? {
-        return sharedPreferences.getString(KEY_CLOUD_USERNAME, null)
+        return getString(KEY_CLOUD_USERNAME, null)
     }
 
     fun saveCloudToken(token: String?) {
-        sharedPreferences.edit { putString(KEY_CLOUD_TOKEN, token) }
+        edit().putString(KEY_CLOUD_TOKEN, token).apply()
     }
 
     fun getCloudToken(): String? {
-        return sharedPreferences.getString(KEY_CLOUD_TOKEN, null)
+        return getString(KEY_CLOUD_TOKEN, null)
     }
 
     fun saveCloudPath(path: String?) {
-        sharedPreferences.edit { putString(KEY_CLOUD_PATH, path) }
+        edit().putString(KEY_CLOUD_PATH, path).apply()
     }
 
     fun getCloudPath(): String? {
-        return sharedPreferences.getString(KEY_CLOUD_PATH, null)
+        return getString(KEY_CLOUD_PATH, null)
     }
 
     fun clearCloudSession() {
-        sharedPreferences.edit {
+        edit().apply {
             remove(KEY_CLOUD_PROVIDER)
             remove(KEY_CLOUD_USERNAME)
             remove(KEY_CLOUD_TOKEN)
             remove(KEY_CLOUD_PATH)
-        }
+        }.apply()
     }
 }

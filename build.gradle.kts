@@ -105,4 +105,5 @@ dependencies {
     api(libs.nordic.ble)
     api(libs.nordic.ble.ktx)
     api(libs.androidx.security.crypto)
+    api(libs.tink.android)
 }
