@@ -45,7 +45,8 @@ abstract class CloudStorageViewModel(application: Application) : AndroidViewMode
 
     private val scopes = listOf("Files.ReadWrite")
 
-    private var isLoggingIn = false
+    private val _isLoggingIn = MutableStateFlow(false)
+    val isLoggingIn: StateFlow<Boolean> = _isLoggingIn.asStateFlow()
 
     abstract fun getRootName(): String
     abstract fun getSubPath(): String
@@ -93,6 +94,8 @@ abstract class CloudStorageViewModel(application: Application) : AndroidViewMode
     }
 
     fun loginGoogle(context: Context) {
+        if (_isLoggingIn.value) return
+        _isLoggingIn.value = true
         viewModelScope.launch {
             try {
                 val credentialManager = CloudManager.getCredentialManager(context)
@@ -117,20 +120,22 @@ abstract class CloudStorageViewModel(application: Application) : AndroidViewMode
                 }
             } catch (e: Exception) {
                 _errorEvents.emit("Sign-in failed: ${e.message}")
+            } finally {
+                _isLoggingIn.value = false
             }
         }
     }
 
     fun loginOneDrive(activity: Activity) {
-        if (isLoggingIn) return
-        isLoggingIn = true
+        if (_isLoggingIn.value) return
+        _isLoggingIn.value = true
         
         viewModelScope.launch {
             CloudManager.signInOneDrive(
                 activity,
                 scopes,
                 onSuccess = { result ->
-                    isLoggingIn = false
+                    _isLoggingIn.value = false
                     val email = result.account.username
                     cloudPreferences.saveCloudProvider(CloudPreferences.PROVIDER_ONEDRIVE)
                     cloudPreferences.saveCloudUsername(email)
@@ -140,11 +145,11 @@ abstract class CloudStorageViewModel(application: Application) : AndroidViewMode
                     viewModelScope.launch { _successEvents.emit("Signed into OneDrive") }
                 },
                 onError = { exception ->
-                    isLoggingIn = false
+                    _isLoggingIn.value = false
                     viewModelScope.launch { _errorEvents.emit("OneDrive sign-in failed: ${exception.message}") }
                 },
                 onCancel = {
-                    isLoggingIn = false
+                    _isLoggingIn.value = false
                     viewModelScope.launch { _errorEvents.emit("OneDrive sign-in cancelled") }
                 }
             )
