@@ -1,6 +1,6 @@
-package com.dogecoding.android_embedded.inertia.log.view
+package com.dogecoding.android_embedded.inertia.components.log.view
 
-import com.dogecoding.android_embedded.inertia.log.database.LogDbRecord
+import com.dogecoding.android_embedded.inertia.components.log.database.LogDbRecord
 
 
 sealed class LogListItem {

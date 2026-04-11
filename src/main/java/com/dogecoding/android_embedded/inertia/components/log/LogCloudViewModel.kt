@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.inertia.log
+package com.dogecoding.android_embedded.inertia.components.log
 
 import android.app.Application
 import android.util.Log
@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.dogecoding.android_components.cloud.CloudStorageViewModel
 import com.dogecoding.android_components.cloud.preferences.CloudPreferences
 import com.dogecoding.android_embedded.R
-import com.dogecoding.android_embedded.inertia.log.database.LogDatabase
-import com.dogecoding.android_embedded.inertia.log.database.LogDbRecord
+import com.dogecoding.android_embedded.inertia.components.log.database.LogDatabase
+import com.dogecoding.android_embedded.inertia.components.log.database.LogDbRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow

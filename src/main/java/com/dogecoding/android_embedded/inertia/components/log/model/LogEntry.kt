@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.inertia.log.model
+package com.dogecoding.android_embedded.inertia.components.log.model
 
 
 import com.dogecoding.android_core.extension.getUIntLe

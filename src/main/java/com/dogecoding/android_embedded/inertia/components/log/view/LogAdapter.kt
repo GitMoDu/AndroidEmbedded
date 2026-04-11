@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.inertia.log.view
+package com.dogecoding.android_embedded.inertia.components.log.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dogecoding.android_embedded.R
 import com.dogecoding.android_embedded.databinding.ItemLogEntryBinding
 import com.dogecoding.android_embedded.databinding.ItemLogSessionBinding
-import com.dogecoding.android_embedded.inertia.log.LogFormatter
-import com.dogecoding.android_embedded.inertia.log.model.LogType
+import com.dogecoding.android_embedded.inertia.components.log.format.LogFormatter
+import com.dogecoding.android_embedded.inertia.components.log.model.LogType
 
 class LogAdapter : ListAdapter<LogListItem, RecyclerView.ViewHolder>(LogDiffCallback()) {
 

@@ -1,11 +1,11 @@
-package com.dogecoding.android_embedded.inertia.log.view
+package com.dogecoding.android_embedded.inertia.components.log.view
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.dogecoding.android_embedded.databinding.ViewLogGroupBinding
-import com.dogecoding.android_embedded.inertia.log.database.LogDbRecord
+import com.dogecoding.android_embedded.inertia.components.log.database.LogDbRecord
 
 class LogView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -45,7 +45,7 @@ class LogView @JvmOverloads constructor(
 
         val wasAtBottom = isAtBottom()
         currentDisplayItems = displayItems
-        
+
         adapter.submitList(displayItems) {
             if (wasAtBottom && adapter.itemCount > 0) {
                 binding.logRecycler.scrollToPosition(adapter.itemCount - 1)

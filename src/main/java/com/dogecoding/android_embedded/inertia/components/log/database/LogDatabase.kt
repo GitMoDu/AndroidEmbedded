@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.inertia.log.database
+package com.dogecoding.android_embedded.inertia.components.log.database
 
 import android.content.Context
 import androidx.room.Database

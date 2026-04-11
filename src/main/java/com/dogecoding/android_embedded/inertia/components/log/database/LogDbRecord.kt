@@ -1,4 +1,4 @@
-package com.dogecoding.android_embedded.inertia.log.database
+package com.dogecoding.android_embedded.inertia.components.log.database
 
 import androidx.room.Entity
 import androidx.room.Index
