@@ -2,5 +2,12 @@
 <resources>
     <color name="background">#FF000000</color>
     <color name="foreground">#FFFFFFFF</color>
+
+    <color name="background_partial">#26000000</color>
+    <color name="foreground_partial">#26FFFFFF</color>
+
     <color name="ble_scanning">#10FFFFFF</color>
+
+    <color name="log_text_info">@color/foreground</color>
+    <color name="log_background">#10FFFFFF</color>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Android Embedded App</string>
     <string name="ble_scan_remember_this_device">Remember this device</string>
     <string name="ble_scan_scan">Scan</string>
     <string name="ble_scan_stop">Stop</string>

@@ -2,5 +2,9 @@
 <resources>
     <color name="background">#FFFFFFFF</color>
     <color name="foreground">#FF000000</color>
+
+    <color name="background_partial">#26FFFFFF</color>
+    <color name="foreground_partial">#26000000</color>
+
     <color name="ble_scanning">#10000000</color>
 </resources>
