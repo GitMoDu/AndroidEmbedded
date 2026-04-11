@@ -41,6 +41,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import kotlin.coroutines.resume
 
 object CloudManager {
@@ -98,8 +99,19 @@ object CloudManager {
     }
 
     fun getGoogleIdOption(context: Context): GetGoogleIdOption {
-        val resId = getResourceId(context, "google_server_client_id", "string")
-        val clientId = if (resId != 0) context.getString(resId) else ""
+        val clientId = try {
+            val jsonString =
+                context.assets.open("google-services.json").bufferedReader().use { it.readText() }
+            val json = JSONObject(jsonString)
+            // Try "web" first (required for ID tokens), then fall back to "installed"
+            if (json.has("web")) {
+                json.getJSONObject("web").getString("client_id")
+            } else {
+                json.getJSONObject("installed").getString("client_id")
+            }
+        } catch (e: Exception) {
+            throw e
+        }
 
         return GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)
@@ -174,12 +186,10 @@ object CloudManager {
     ) {
         val msalApp = getMsalApp(context) ?: return
 
-        val currentAccountResult = withContext(Dispatchers.IO) { msalApp.getCurrentAccount() }
+        val currentAccountResult = withContext(Dispatchers.IO) { msalApp.currentAccount }
         val account = currentAccountResult.currentAccount ?: return
 
-        val authority = if (!account.authority.isNullOrBlank()) {
-            account.authority
-        } else {
+        val authority = account.authority.ifBlank {
             "https://login.microsoftonline.com/common"
         }
 

@@ -16,7 +16,8 @@ android {
         consumerProguardFiles("consumer-rules.pro")
 
         // MSAL Activity must include MSAL Activity in placeholder.
-        // as well as msal.path=Base64-encoded-signature-hash in local.properties.
+        // Set msal.path=Base64-encoded-signature-hash in local.properties.
+        // And add signature hash to auth_config_single_account.json
 //        val properties = Properties()
 //        val localPropertiesFile = project.rootProject.file("local.properties")
 //        if (localPropertiesFile.exists()) {
