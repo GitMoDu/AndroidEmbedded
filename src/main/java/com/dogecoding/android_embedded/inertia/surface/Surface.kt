@@ -1,7 +1,8 @@
-package com.dogecoding.android_embedded.inertia.`interface`.surface.model
+package com.dogecoding.android_embedded.inertia.surface
 
-
-// Generic surface interface.
+/*
+* Abstract surface with common functionality.
+ */
 @OptIn(ExperimentalUnsignedTypes::class)
 abstract class Surface(private val blockCount: Int) {
 
@@ -27,6 +28,6 @@ abstract class Surface(private val blockCount: Int) {
     }
 
     fun getPayloadSize(): Int {
-        return blockCount * BLOCK_SIZE
+        return getPayloadSize(blockCount)
     }
 }
