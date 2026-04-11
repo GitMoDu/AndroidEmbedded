@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.legacy.kapt)
 }
 
 android {
@@ -19,7 +20,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -29,6 +30,25 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/license.txt"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/NOTICE.txt"
+            excludes += "META-INF/notice.txt"
+            excludes += "META-INF/ASL2.0"
+        }
     }
 }
 
@@ -43,6 +63,26 @@ dependencies {
     api(libs.androidx.constraintlayout)
     api(libs.lottie)
 
+    // Google Drive
+    api(libs.google.auth)
+    api(libs.google.api.client)
+    api(libs.google.drive)
+    api(libs.google.gson)
+    api(libs.androidx.credentials)
+    api(libs.androidx.credentials.play.services.auth)
+    api(libs.googleid)
+
+    api(libs.microsoft.msal) {
+        exclude(group = "com.microsoft.device.display", module = "display-mask")
+    }
+    api(libs.microsoft.graph) {
+        exclude(group = "com.microsoft.device.display", module = "display-mask")
+    }
+
+    api(libs.androidx.room.runtime)
+    api(libs.androidx.room.ktx)
+    add("kapt", libs.androidx.room.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -50,4 +90,5 @@ dependencies {
     api(libs.usb.serial.for1.android)
     api(libs.nordic.ble)
     api(libs.nordic.ble.ktx)
+    api(libs.androidx.security.crypto)
 }
