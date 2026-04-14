@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.SpannableStringBuilder
 import com.dogecoding.android_embedded.inertia.components.log.database.LogDbRecord
 import com.dogecoding.android_embedded.inertia.components.log.format.TagLogFormatter
-import com.dogecoding.android_embedded.inertia.drivers.i2c.log.Model
 
 class I2cInterfaceLogFormatter : TagLogFormatter(Model.LOG_TAG) {
 
@@ -12,10 +11,11 @@ class I2cInterfaceLogFormatter : TagLogFormatter(Model.LOG_TAG) {
         val builder = SpannableStringBuilder()
         builder.append("[I2C] ")
 
-        val message = when (log.code) {
-            0 -> "ErrorTimeout"
-            1 -> "RecoveryAttempt"
-            else -> "Unknown Code(${log.code})"
+        val logCode = Model.LogCodeEnum.entries.getOrNull(log.code)
+        val message = when (logCode) {
+            Model.LogCodeEnum.ErrorTimeout -> "⌛ ErrorTimeout"
+            Model.LogCodeEnum.RecoveryAttempt -> "🔧 RecoveryAttempt"
+            null -> "❓ Unknown Code(${log.code})"
         }
 
         builder.append(message)

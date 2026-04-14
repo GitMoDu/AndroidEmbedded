@@ -12,7 +12,26 @@ class UartInterfaceLogFormatter : TagLogFormatter(Model.LOG_TAG) {
         val builder = SpannableStringBuilder()
         builder.append("[UART] ")
 
-        val message = Model.LogCodeEnum.entries.getOrNull(log.code)?.name ?: "Unknown Code(${log.code})"
+        val logCode = Model.LogCodeEnum.entries.getOrNull(log.code)
+        val message = when (logCode) {
+            Model.LogCodeEnum.Connected -> "🟢 ${logCode.name}"
+            Model.LogCodeEnum.Disconnected -> "🔴 ${logCode.name}"
+            Model.LogCodeEnum.ConnectingTimeout -> "⏳ ${logCode.name}"
+            Model.LogCodeEnum.ErrorRxUnrecognizedHeader,
+            Model.LogCodeEnum.ErrorRxUnexpectedMessageInState,
+            Model.LogCodeEnum.ErrorRxUnexpectedSize,
+            Model.LogCodeEnum.ErrorRxStartTimeout,
+            Model.LogCodeEnum.ErrorRxCrc,
+            Model.LogCodeEnum.ErrorRxTooShort,
+            Model.LogCodeEnum.ErrorRxTooLong,
+            Model.LogCodeEnum.ErrorRxEndTimeout,
+            Model.LogCodeEnum.ErrorRxUnknown,
+            Model.LogCodeEnum.ErrorTxStartTimeout,
+            Model.LogCodeEnum.ErrorTxDataTimeout,
+            Model.LogCodeEnum.ErrorTxEndTimeout,
+            Model.LogCodeEnum.ErrorTxUnknown -> "⚠️ ${logCode.name}"
+            else -> "❓ Unknown Code(${log.code})"
+        }
 
         builder.append(message)
 

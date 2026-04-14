@@ -13,10 +13,11 @@ class BootCounterLogFormatter : TagLogFormatter(Model.LOG_TAG) {
         val builder = SpannableStringBuilder()
         builder.append("[BootCounter] ")
 
-        val message = when (log.code) {
-            LogCodeEnum.Booted.ordinal -> "${LogCodeEnum.Booted.name}(%${log.bootId})"
-            LogCodeEnum.ErrorNoCounterSource.ordinal -> LogCodeEnum.ErrorNoCounterSource.name
-            else -> "Unknown Code(${log.code})"
+        val logCode = Model.LogCodeEnum.entries.getOrNull(log.code)
+        val message = when (logCode) {
+            Model.LogCodeEnum.Booted -> "🚀 Booted (#${log.bootId})"
+            Model.LogCodeEnum.ErrorNoCounterSource -> "⚠️ ErrorNoCounterSource"
+            null -> "❓ Unknown Code(${log.code})"
         }
         builder.append(message)
 

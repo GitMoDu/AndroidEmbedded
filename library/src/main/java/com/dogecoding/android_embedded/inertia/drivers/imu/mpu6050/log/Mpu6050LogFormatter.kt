@@ -11,15 +11,20 @@ class Mpu6050LogFormatter : TagLogFormatter(Model.LOG_TAG) {
         val builder = SpannableStringBuilder()
         builder.append("[MPU6050] ")
 
-        val message = when (log.code) {
-            Model.LogCodeEnum.RecoveryAttempt.ordinal -> "${Model.LogCodeEnum.RecoveryAttempt.name}(${log.value})"
-            Model.LogCodeEnum.ErrorReadTemperature.ordinal -> Model.LogCodeEnum.ErrorReadTemperature.name
-            Model.LogCodeEnum.ErrorReadMotion.ordinal -> Model.LogCodeEnum.ErrorReadMotion.name
-            Model.LogCodeEnum.ErrorBoot.ordinal -> Model.LogCodeEnum.ErrorBoot.name
-            else -> "Unknown Code(${log.code})"
+        val logCode = Model.LogCodeEnum.entries.getOrNull(log.code)
+        val message = when (logCode) {
+            Model.LogCodeEnum.ErrorBoot -> "🚫 ErrorBoot"
+            Model.LogCodeEnum.ErrorReadMotion -> "📉 ErrorReadMotion"
+            Model.LogCodeEnum.ErrorReadTemperature -> "🌡️ ErrorReadTemperature"
+            Model.LogCodeEnum.RecoveryAttempt -> "🔧 RecoveryAttempt"
+            null -> "❓ Unknown Code(${log.code})"
         }
 
         builder.append(message)
+
+        if (log.value != 0) {
+            builder.append(" (Val: ${log.value})")
+        }
 
         return builder
     }
