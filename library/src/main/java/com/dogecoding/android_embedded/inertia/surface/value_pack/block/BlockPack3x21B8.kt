@@ -1,8 +1,8 @@
 package com.dogecoding.android_embedded.inertia.surface.value_pack.block
 
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValueHelpers.Companion.limitInt
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValueHelpers.Companion.limitUInt
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValueHelpers.Companion.requireValueIndex
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValueHelpers.Companion.limitInt
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValueHelpers.Companion.limitUInt
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValueHelpers.Companion.requireValueIndex
 
 /**
  * Packs 3 21-bit values into 8 bytes.

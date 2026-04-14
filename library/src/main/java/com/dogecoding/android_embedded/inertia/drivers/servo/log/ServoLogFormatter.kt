@@ -1,19 +1,18 @@
-package com.dogecoding.android_embedded.inertia.drivers.i2c
+package com.dogecoding.android_embedded.inertia.drivers.servo.log
 
 import android.content.Context
 import android.text.SpannableStringBuilder
-import com.dogecoding.android_embedded.inertia.components.log.TagLogFormatter
 import com.dogecoding.android_embedded.inertia.components.log.database.LogDbRecord
+import com.dogecoding.android_embedded.inertia.components.log.format.TagLogFormatter
+import com.dogecoding.android_embedded.inertia.drivers.servo.log.Model
 
-class I2cInterfaceLogFormatter : TagLogFormatter(1033721212) {
+class ServoLogFormatter : TagLogFormatter(Model.LOG_TAG) {
 
     override fun format(context: Context, log: LogDbRecord): CharSequence {
         val builder = SpannableStringBuilder()
-        builder.append("[I2C] ")
+        builder.append("[Servo] ")
 
         val message = when (log.code) {
-            0 -> "ErrorTimeout"
-            1 -> "RecoveryAttempt"
             else -> "Unknown Code(${log.code})"
         }
 

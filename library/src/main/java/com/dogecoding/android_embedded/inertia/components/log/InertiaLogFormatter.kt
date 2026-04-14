@@ -1,16 +1,16 @@
-package com.dogecoding.android_embedded.inertia
+package com.dogecoding.android_embedded.inertia.components.log
 
-import com.dogecoding.android_embedded.inertia.components.boot_counter.BootCounterLogFormatter
-import com.dogecoding.android_embedded.inertia.components.log.LogMetaFormatter
+import com.dogecoding.android_embedded.inertia.components.boot_counter.log.BootCounterLogFormatter
 import com.dogecoding.android_embedded.inertia.components.log.format.LogFormatter
-import com.dogecoding.android_embedded.inertia.components.uart_interface.UartInterfaceLogFormatter
-import com.dogecoding.android_embedded.inertia.drivers.ahrs.AhrsLogFormatter
-import com.dogecoding.android_embedded.inertia.drivers.ahrs.reefwing.ReefwingAhrsLogFormatter
-import com.dogecoding.android_embedded.inertia.drivers.i2c.I2cInterfaceLogFormatter
-import com.dogecoding.android_embedded.inertia.drivers.imu.mpu6050.Mpu6050LogFormatter
-import com.dogecoding.android_embedded.inertia.drivers.serial.SerialInterfaceLogFormatter
-import com.dogecoding.android_embedded.inertia.drivers.spi.SpiInterfaceLogFormatter
-import com.dogecoding.android_embedded.inertia.drivers.uart.vg6328A.Vg6328aLogFormatter
+import com.dogecoding.android_embedded.inertia.components.log.log.LogMetaFormatter
+import com.dogecoding.android_embedded.inertia.components.uart_interface.log.UartInterfaceLogFormatter
+import com.dogecoding.android_embedded.inertia.drivers.ahrs.log.AhrsLogFormatter
+import com.dogecoding.android_embedded.inertia.drivers.ahrs.reefwing.log.ReefwingAhrsLogFormatter
+import com.dogecoding.android_embedded.inertia.drivers.i2c.log.I2cInterfaceLogFormatter
+import com.dogecoding.android_embedded.inertia.drivers.imu.mpu6050.log.Mpu6050LogFormatter
+import com.dogecoding.android_embedded.inertia.drivers.serial.log.SerialInterfaceLogFormatter
+import com.dogecoding.android_embedded.inertia.drivers.spi.log.SpiInterfaceLogFormatter
+import com.dogecoding.android_embedded.inertia.drivers.uart.vg6328A.log.Vg6328aLogFormatter
 
 object InertiaLogFormatter {
 

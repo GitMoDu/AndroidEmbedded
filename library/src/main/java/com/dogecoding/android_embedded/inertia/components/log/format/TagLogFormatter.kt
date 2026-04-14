@@ -1,7 +1,6 @@
-package com.dogecoding.android_embedded.inertia.components.log
+package com.dogecoding.android_embedded.inertia.components.log.format
 
 import com.dogecoding.android_embedded.inertia.components.log.database.LogDbRecord
-import com.dogecoding.android_embedded.inertia.components.log.format.LogEntryFormatter
 
 /**
  * Base class for log formatters that target a specific tag.

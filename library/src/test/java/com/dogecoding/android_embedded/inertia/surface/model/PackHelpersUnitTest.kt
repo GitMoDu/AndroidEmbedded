@@ -1,7 +1,7 @@
 package com.dogecoding.android_embedded.inertia.surface.model
 
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValuePack3x21B8
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValuePack4x12B6
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValuePack3x21B8
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValuePack4x12B6
 import com.dogecoding.android_embedded.inertia.surface.value_pack.block.BlockPack3x21B8
 import com.dogecoding.android_embedded.inertia.surface.value_pack.block.BlockPack4x12B6
 import org.junit.Assert.assertEquals

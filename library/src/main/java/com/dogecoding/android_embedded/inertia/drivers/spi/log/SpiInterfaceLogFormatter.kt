@@ -1,18 +1,17 @@
-package com.dogecoding.android_embedded.inertia.components.log
+package com.dogecoding.android_embedded.inertia.drivers.spi.log
 
 import android.content.Context
 import android.text.SpannableStringBuilder
+import com.dogecoding.android_embedded.inertia.components.log.format.TagLogFormatter
 import com.dogecoding.android_embedded.inertia.components.log.database.LogDbRecord
 
-class LogMetaFormatter : TagLogFormatter(985820946) {
+class SpiInterfaceLogFormatter : TagLogFormatter(Model.LOG_TAG) {
 
     override fun format(context: Context, log: LogDbRecord): CharSequence {
         val builder = SpannableStringBuilder()
-        builder.append("[Inertia Log] ")
+        builder.append("[SPI] ")
 
         val message = when (log.code) {
-            0 -> "ErrorRepositoryInvalidEntry"
-            1 -> "ErrorCorruptedEntry"
             else -> "Unknown Code(${log.code})"
         }
 

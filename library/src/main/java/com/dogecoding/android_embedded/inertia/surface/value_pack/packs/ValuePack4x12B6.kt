@@ -1,10 +1,10 @@
-package com.dogecoding.android_embedded.inertia.surface.value_pack
+package com.dogecoding.android_embedded.inertia.surface.value_pack.packs
 
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValueHelpers.Companion.FactorScale32
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValueHelpers.Companion.limitInt
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValueHelpers.Companion.limitShort
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValueHelpers.Companion.limitUShort
-import com.dogecoding.android_embedded.inertia.surface.value_pack.ValueHelpers.Companion.requireValueIndex
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValueHelpers.Companion.FactorScale32
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValueHelpers.Companion.limitInt
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValueHelpers.Companion.limitShort
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValueHelpers.Companion.limitUShort
+import com.dogecoding.android_embedded.inertia.surface.value_pack.packs.ValueHelpers.Companion.requireValueIndex
 import com.dogecoding.android_embedded.inertia.surface.value_pack.block.BlockPack4x12B6
 
 
