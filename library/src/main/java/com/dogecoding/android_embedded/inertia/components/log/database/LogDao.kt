@@ -14,6 +14,9 @@ interface LogDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(entries: List<LogDbRecord>)
 
+    @Query("SELECT * FROM logs ORDER BY bootId DESC, recordId DESC")
+    fun getFullLogs(): Flow<List<LogDbRecord>>
+
     @Query("SELECT * FROM logs ORDER BY bootId DESC, recordId DESC LIMIT 100")
     fun getRecentLogs(): Flow<List<LogDbRecord>>
 

@@ -21,6 +21,20 @@ class LogView @JvmOverloads constructor(
         binding.logRecycler.adapter = adapter
     }
 
+    /**
+     * Set whether the internal recycler can be scrolled or interacted with.
+     * Useful for small preview logs that should act as a single button.
+     */
+    fun setInteractionEnabled(enabled: Boolean) {
+        binding.logRecycler.isClickable = enabled
+        binding.logRecycler.isFocusable = enabled
+        binding.logRecycler.layoutManager = object : androidx.recyclerview.widget.LinearLayoutManager(context) {
+            override fun canScrollVertically(): Boolean = enabled
+        }
+        // Ensure touches pass through to parent if disabled
+        binding.logRecycler.setOnTouchListener(if (enabled) null else { _, _ -> false })
+    }
+
     fun setLogs(logs: List<LogDbRecord>) {
         if (logs.isEmpty()) {
             currentDisplayItems = emptyList()
