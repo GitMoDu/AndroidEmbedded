@@ -7,7 +7,7 @@
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <Spinner
-        android:id="@+id/servo_channel_spinner"
+        android:id="@+id/pwm_channel_spinner"
         style="@style/Widget.AppCompat.Spinner.DropDown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <CheckBox
-        android:id="@+id/servo_enabled_check"
+        android:id="@+id/pwm_enabled_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -26,29 +26,29 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/servo_pulse_label"
+        android:id="@+id/pwm_value_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="8dp"
         android:layout_marginStart="16dp"
         android:fontFamily="monospace"
-        android:text="Pulse: 1500us"
+        android:text="Value: 0\n(0.0%)"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/servo_pulse_seekbar"
-        app:layout_constraintTop_toBottomOf="@+id/servo_channel_spinner" />
+        app:layout_constraintBottom_toTopOf="@+id/pwm_value_seekbar"
+        app:layout_constraintTop_toBottomOf="@+id/pwm_channel_spinner" />
 
     <SeekBar
-        android:id="@+id/servo_pulse_seekbar"
+        android:id="@+id/pwm_value_seekbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="16dp"
-        android:max="1000"
+        android:max="65535"
         android:paddingVertical="20dp"
-        android:progress="500"
+        android:progress="0"
         app:layout_constraintBottom_toTopOf="@+id/marker_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/servo_pulse_label" />
+        app:layout_constraintTop_toBottomOf="@id/pwm_value_label" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/marker_layout"
@@ -56,10 +56,10 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/servo_pulse_seekbar">
+        app:layout_constraintTop_toBottomOf="@+id/pwm_value_seekbar">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/marker_1000"
+            android:id="@+id/marker_0"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,17 +67,17 @@
             android:drawableTint="@color/foreground"
             android:minWidth="48dp"
             android:minHeight="48dp"
-            android:text="1000"
+            android:text="0%"
             android:textColor="@color/foreground"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/marker_1500"
+            app:layout_constraintEnd_toStartOf="@+id/marker_32768"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/marker_1500"
+            android:id="@+id/marker_32768"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -85,16 +85,17 @@
             android:drawableTint="@color/foreground"
             android:minWidth="48dp"
             android:minHeight="48dp"
-            android:text="1500"
+            android:text="50%"
             android:textColor="@color/foreground"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/marker_2000"
-            app:layout_constraintStart_toEndOf="@+id/marker_1000"
+            app:layout_constraintEnd_toStartOf="@+id/marker_65535"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toEndOf="@+id/marker_0"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/marker_2000"
+            android:id="@+id/marker_65535"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -102,12 +103,12 @@
             android:drawableTint="@color/foreground"
             android:minWidth="48dp"
             android:minHeight="48dp"
-            android:text="2000"
+            android:text="100%"
             android:textColor="@color/foreground"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/marker_1500"
+            app:layout_constraintStart_toEndOf="@+id/marker_32768"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
