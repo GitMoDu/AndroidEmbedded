@@ -4,7 +4,6 @@ import com.dogecoding.android_embedded.inertia.components.ahrs.log.AhrsLogFormat
 import com.dogecoding.android_embedded.inertia.components.ahrs.reefwing.log.ReefwingAhrsLogFormatter
 import com.dogecoding.android_embedded.inertia.components.ahrs.xio.log.XioAhrsLogFormatter
 import com.dogecoding.android_embedded.inertia.components.boot_counter.log.BootCounterLogFormatter
-import com.dogecoding.android_embedded.inertia.components.core.lifecycle.log.LifecycleLogFormatter
 import com.dogecoding.android_embedded.inertia.components.light.log.LightLogFormatter
 import com.dogecoding.android_embedded.inertia.components.link.log.LinkLogFormatter
 import com.dogecoding.android_embedded.inertia.components.log.format.LogFormatter
@@ -38,9 +37,6 @@ object InertiaLogFormatter {
         // Log meta.
         LogFormatter.registerFormatter(LogMetaFormatter())
         LogFormatter.registerFormatter(BootCounterLogFormatter())
-
-        // Core
-        LogFormatter.registerFormatter(LifecycleLogFormatter())
 
         // Link
         LogFormatter.registerFormatter(LinkLogFormatter())
