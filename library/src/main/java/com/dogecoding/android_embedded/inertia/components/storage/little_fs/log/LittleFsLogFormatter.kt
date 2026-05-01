@@ -9,7 +9,7 @@ class LittleFsLogFormatter : TagLogFormatter(Model.LOG_TAG) {
 
     override fun format(context: Context, log: LogDbRecord): CharSequence {
         val builder = SpannableStringBuilder()
-        builder.append("[LITTLEFS] ")
+        builder.append("[LittleFs] ")
 
         val logCode = Model.LogCodeEnum.entries.getOrNull(log.code)
         val message = when (logCode) {

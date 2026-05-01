@@ -9,7 +9,7 @@ class UartInterfaceLogFormatter : TagLogFormatter(Model.LOG_TAG) {
 
     override fun format(context: Context, log: LogDbRecord): CharSequence {
         val builder = SpannableStringBuilder()
-        builder.append("[UART_INTERFACE] ")
+        builder.append("[UART API] ")
 
         val logCode = Model.LogCodeEnum.entries.getOrNull(log.code)
         val message = when (logCode) {
