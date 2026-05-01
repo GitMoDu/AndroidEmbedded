@@ -1,5 +1,7 @@
 package com.dogecoding.android_embedded.inertia.components.log.view
 
+import android.graphics.Typeface
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -12,7 +14,17 @@ import com.dogecoding.android_embedded.databinding.ItemLogSessionBinding
 import com.dogecoding.android_embedded.inertia.components.log.format.LogFormatter
 import com.dogecoding.android_embedded.inertia.components.log.model.LogType
 
-class LogAdapter : ListAdapter<LogListItem, RecyclerView.ViewHolder>(LogDiffCallback()) {
+class LogAdapter(private var textSizePx: Float? = null, private var typeface: Typeface? = null) : ListAdapter<LogListItem, RecyclerView.ViewHolder>(LogDiffCallback()) {
+
+    fun setTextSize(sizePx: Float) {
+        this.textSizePx = sizePx
+        notifyDataSetChanged()
+    }
+
+    fun setTypeface(typeface: Typeface) {
+        this.typeface = typeface
+        notifyDataSetChanged()
+    }
 
     companion object {
         private const val TYPE_SESSION = 0
@@ -36,7 +48,7 @@ class LogAdapter : ListAdapter<LogListItem, RecyclerView.ViewHolder>(LogDiffCall
 
             TYPE_ENTRY -> {
                 val binding = ItemLogEntryBinding.inflate(inflater, parent, false)
-                LogViewHolder(binding)
+                LogViewHolder(binding, textSizePx, typeface)
             }
 
             else -> throw IllegalArgumentException("Unknown view type: $viewType")
@@ -71,11 +83,19 @@ class LogAdapter : ListAdapter<LogListItem, RecyclerView.ViewHolder>(LogDiffCall
         }
     }
 
-    class LogViewHolder(private val binding: ItemLogEntryBinding) :
+    class LogViewHolder(private val binding: ItemLogEntryBinding, private val textSizePx: Float?, private val typeface: Typeface?) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(entryItem: LogListItem.Entry) {
             val entry = entryItem.logDbRecord
             binding.tvMessage.text = LogFormatter.formatLogEntry(itemView.context, entry)
+
+            textSizePx?.let {
+                binding.tvMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, it)
+            }
+
+            typeface?.let {
+                binding.tvMessage.typeface = it
+            }
 
             val colorRes = when (LogType.Companion.fromUByte(entry.type.toUByte())) {
                 LogType.Error -> R.color.log_text_error

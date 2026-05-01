@@ -29,8 +29,8 @@ class LogFormatter {
             return customFormatters.find { it.canFormat(log) }
         }
 
-        private val sdf = SimpleDateFormat("HH:mm:ss", Locale.US).apply {
-            timeZone = TimeZone.getTimeZone("UTC")
+        private val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).apply {
+            timeZone = TimeZone.getDefault()
         }
 
         fun formatLogEntry(context: Context, log: LogDbRecord): CharSequence {

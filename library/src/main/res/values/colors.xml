@@ -19,10 +19,10 @@
 
     <color name="log_text">#00FF00</color>
     <color name="log_text_secondary">@color/foreground</color>
-    <color name="log_text_warning">#FFFFC107</color>
+    <color name="log_text_warning">#FFFAFF00</color>
     <color name="log_text_error">#FFF44336</color>
 
-    <color name="log_text_info">@color/background</color>
+    <color name="log_text_info">@color/foreground</color>
     <color name="log_text_debug">#00FF00</color>
     <color name="log_background">#45000000</color>
 

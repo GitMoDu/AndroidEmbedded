@@ -22,6 +22,13 @@ class LogView @JvmOverloads constructor(
     }
 
     /**
+     * Set the text size of the log entries in pixels.
+     */
+    fun setTextSize(sizePx: Float) {
+        adapter.setTextSize(sizePx)
+    }
+
+    /**
      * Set whether the internal recycler can be scrolled or interacted with.
      * Useful for small preview logs that should act as a single button.
      */

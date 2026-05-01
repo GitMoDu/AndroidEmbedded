@@ -10,4 +10,8 @@
 
     <color name="log_text_info">@color/foreground</color>
     <color name="log_background">#10FFFFFF</color>
+
+    <color name="log_text_warning">#FFFFC107</color>
+
+
 </resources>
