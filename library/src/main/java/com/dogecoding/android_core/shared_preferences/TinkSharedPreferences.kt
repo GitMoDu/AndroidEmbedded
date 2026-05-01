@@ -6,6 +6,7 @@ import android.util.Base64
 import android.util.Log
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeyTemplates
+import com.google.crypto.tink.RegistryConfiguration
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 
@@ -40,7 +41,7 @@ open class TinkSharedPreferences(
             .withMasterKeyUri(MASTER_KEY_URI)
             .build()
             .keysetHandle
-            .getPrimitive(Aead::class.java)
+            .getPrimitive(RegistryConfiguration.get(), Aead::class.java)
     }
 
     protected val delegate: SharedPreferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE)
