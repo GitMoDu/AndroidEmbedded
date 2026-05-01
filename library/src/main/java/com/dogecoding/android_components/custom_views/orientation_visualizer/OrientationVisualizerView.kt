@@ -20,7 +20,8 @@ import javax.microedition.khronos.opengles.GL10
  * A GLSurfaceView that visualizes 3D orientation using an OBJ model.
  * Supports automatic centering, scaling, and runtime model loading.
  */
-open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = null) : GLSurfaceView(context, attrs) {
+open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = null) :
+    GLSurfaceView(context, attrs) {
 
     protected val renderer = ModelRenderer()
 
@@ -67,7 +68,14 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
     /**
      * Updates the camera position.
      */
-    fun updateCamera(eyeX: Float, eyeY: Float, eyeZ: Float, centerX: Float = 0f, centerY: Float = 0f, centerZ: Float = 0f) {
+    fun updateCamera(
+        eyeX: Float,
+        eyeY: Float,
+        eyeZ: Float,
+        centerX: Float = 0f,
+        centerY: Float = 0f,
+        centerZ: Float = 0f
+    ) {
         renderer.setCamera(eyeX, eyeY, eyeZ, centerX, centerY, centerZ)
     }
 
@@ -77,7 +85,11 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
      * @param lightColor The color of the light [r, g, b].
      * @param ambient The ambient light strength (0.0 to 1.0).
      */
-    fun updateLighting(lightDir: FloatArray? = null, lightColor: FloatArray? = null, ambient: Float? = null) {
+    fun updateLighting(
+        lightDir: FloatArray? = null,
+        lightColor: FloatArray? = null,
+        ambient: Float? = null
+    ) {
         renderer.setLighting(lightDir, lightColor, ambient)
     }
 
@@ -187,7 +199,19 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
             GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT or GLES30.GL_DEPTH_BUFFER_BIT)
 
             // Setup Camera
-            Matrix.setLookAtM(viewMatrix, 0, eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0f, 1.0f, 0.0f)
+            Matrix.setLookAtM(
+                viewMatrix,
+                0,
+                eyeX,
+                eyeY,
+                eyeZ,
+                centerX,
+                centerY,
+                centerZ,
+                0f,
+                1.0f,
+                0.0f
+            )
             Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
             // Apply Transformations (T * R * S)
@@ -215,35 +239,35 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
         companion object {
             private const val VERTEX_SHADER =
                 "#version 300 es\n" +
-                "uniform mat4 uMVPMatrix;\n" +
-                "uniform mat4 uModelMatrix;\n" +
-                "in vec4 vPosition;\n" +
-                "in vec4 vColor;\n" +
-                "in vec3 vNormal;\n" +
-                "out vec4 vVaryingColor;\n" +
-                "out vec3 vTransformedNormal;\n" +
-                "void main() {\n" +
-                "  gl_Position = uMVPMatrix * vPosition;\n" +
-                "  vVaryingColor = vColor;\n" +
-                "  vTransformedNormal = mat3(uModelMatrix) * vNormal;\n" +
-                "}\n"
+                        "uniform mat4 uMVPMatrix;\n" +
+                        "uniform mat4 uModelMatrix;\n" +
+                        "in vec4 vPosition;\n" +
+                        "in vec4 vColor;\n" +
+                        "in vec3 vNormal;\n" +
+                        "out vec4 vVaryingColor;\n" +
+                        "out vec3 vTransformedNormal;\n" +
+                        "void main() {\n" +
+                        "  gl_Position = uMVPMatrix * vPosition;\n" +
+                        "  vVaryingColor = vColor;\n" +
+                        "  vTransformedNormal = mat3(uModelMatrix) * vNormal;\n" +
+                        "}\n"
 
             private const val FRAGMENT_SHADER =
                 "#version 300 es\n" +
-                "precision mediump float;\n" +
-                "uniform float uAlpha;\n" +
-                "uniform vec3 uLightDir;\n" +
-                "uniform vec3 uLightColor;\n" +
-                "uniform float uAmbient;\n" +
-                "in vec4 vVaryingColor;\n" +
-                "in vec3 vTransformedNormal;\n" +
-                "out vec4 fragColor;\n" +
-                "void main() {\n" +
-                "  vec3 normal = normalize(vTransformedNormal);\n" +
-                "  float diffuse = max(dot(normal, normalize(uLightDir)), 0.0);\n" +
-                "  vec3 finalColor = vVaryingColor.rgb * (diffuse * uLightColor + uAmbient);\n" +
-                "  fragColor = vec4(finalColor, vVaryingColor.a * uAlpha);\n" +
-                "}\n"
+                        "precision mediump float;\n" +
+                        "uniform float uAlpha;\n" +
+                        "uniform vec3 uLightDir;\n" +
+                        "uniform vec3 uLightColor;\n" +
+                        "uniform float uAmbient;\n" +
+                        "in vec4 vVaryingColor;\n" +
+                        "in vec3 vTransformedNormal;\n" +
+                        "out vec4 fragColor;\n" +
+                        "void main() {\n" +
+                        "  vec3 normal = normalize(vTransformedNormal);\n" +
+                        "  float diffuse = max(dot(normal, normalize(uLightDir)), 0.0);\n" +
+                        "  vec3 finalColor = vVaryingColor.rgb * (diffuse * uLightColor + uAmbient);\n" +
+                        "  fragColor = vec4(finalColor, vVaryingColor.a * uAlpha);\n" +
+                        "}\n"
         }
 
         private lateinit var vertexBuffer: FloatBuffer
@@ -286,21 +310,36 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
 
             // Vertices
             GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo[0])
-            GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vertexBuffer.capacity() * 4, vertexBuffer, GLES30.GL_STATIC_DRAW)
+            GLES30.glBufferData(
+                GLES30.GL_ARRAY_BUFFER,
+                vertexBuffer.capacity() * 4,
+                vertexBuffer,
+                GLES30.GL_STATIC_DRAW
+            )
             val posHandle = GLES30.glGetAttribLocation(program, "vPosition")
             GLES30.glEnableVertexAttribArray(posHandle)
             GLES30.glVertexAttribPointer(posHandle, 3, GLES30.GL_FLOAT, false, 0, 0)
 
             // Colors
             GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo[1])
-            GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, colorBuffer.capacity() * 4, colorBuffer, GLES30.GL_STATIC_DRAW)
+            GLES30.glBufferData(
+                GLES30.GL_ARRAY_BUFFER,
+                colorBuffer.capacity() * 4,
+                colorBuffer,
+                GLES30.GL_STATIC_DRAW
+            )
             val colHandle = GLES30.glGetAttribLocation(program, "vColor")
             GLES30.glEnableVertexAttribArray(colHandle)
             GLES30.glVertexAttribPointer(colHandle, 4, GLES30.GL_FLOAT, false, 0, 0)
 
             // Normals
             GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo[2])
-            GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, normalBuffer.capacity() * 4, normalBuffer, GLES30.GL_STATIC_DRAW)
+            GLES30.glBufferData(
+                GLES30.GL_ARRAY_BUFFER,
+                normalBuffer.capacity() * 4,
+                normalBuffer,
+                GLES30.GL_STATIC_DRAW
+            )
             val normalHandle = GLES30.glGetAttribLocation(program, "vNormal")
             GLES30.glEnableVertexAttribArray(normalHandle)
             GLES30.glVertexAttribPointer(normalHandle, 3, GLES30.GL_FLOAT, false, 0, 0)
@@ -309,7 +348,12 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
             val ibo = IntArray(1)
             GLES30.glGenBuffers(1, ibo, 0)
             GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, ibo[0])
-            GLES30.glBufferData(GLES30.GL_ELEMENT_ARRAY_BUFFER, drawListBuffer.capacity() * 2, drawListBuffer, GLES30.GL_STATIC_DRAW)
+            GLES30.glBufferData(
+                GLES30.GL_ELEMENT_ARRAY_BUFFER,
+                drawListBuffer.capacity() * 2,
+                drawListBuffer,
+                GLES30.GL_STATIC_DRAW
+            )
 
             GLES30.glBindVertexArray(0)
         }
@@ -323,16 +367,22 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
                 1f, 0f, 0f, 1f, 0f, 1f, 0f, 1f, 0f, 0f, 1f, 1f, 1f, 1f, 0f, 1f,
                 1f, 0f, 1f, 1f, 0f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, .5f, .5f, .5f, 1f
             )
-            val order = shortArrayOf(0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 4, 0, 3, 4, 3, 7, 5, 1, 2, 5, 2, 6, 4, 5, 1, 4, 1, 0, 3, 2, 6, 3, 6, 7)
+            val order = shortArrayOf(
+                0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 4, 0, 3, 4, 3, 7, 5, 1,
+                2, 5, 2, 6, 4, 5, 1, 4, 1, 0, 3, 2, 6, 3, 6, 7
+            )
             setupBuffers(coords, colors, order)
         }
 
         private fun parseObj(inputStream: InputStream) {
             val vertices = mutableListOf<Float>()
             val indices = mutableListOf<Short>()
-            var minX = Float.MAX_VALUE; var maxX = Float.MIN_VALUE
-            var minY = Float.MAX_VALUE; var maxY = Float.MIN_VALUE
-            var minZ = Float.MAX_VALUE; var maxZ = Float.MIN_VALUE
+            var minX = Float.MAX_VALUE;
+            var maxX = Float.MIN_VALUE
+            var minY = Float.MAX_VALUE;
+            var maxY = Float.MIN_VALUE
+            var minZ = Float.MAX_VALUE;
+            var maxZ = Float.MIN_VALUE
 
             try {
                 inputStream.bufferedReader().use { reader ->
@@ -344,16 +394,22 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
 
                         when (parts[0].lowercase(Locale.ROOT)) {
                             "v" -> if (parts.size >= 4) {
-                                val x = parts[1].toFloat(); val y = parts[2].toFloat(); val z = parts[3].toFloat()
+                                val x = parts[1].toFloat();
+                                val y = parts[2].toFloat();
+                                val z = parts[3].toFloat()
                                 vertices.add(x); vertices.add(y); vertices.add(z)
                                 if (x < minX) minX = x; if (x > maxX) maxX = x
                                 if (y < minY) minY = y; if (y > maxY) maxY = y
                                 if (z < minZ) minZ = z; if (z > maxZ) maxZ = z
                             }
+
                             "f" -> if (parts.size >= 4) {
-                                val fIndices = parts.drop(1).map { (it.split("/")[0].toInt() - 1).toShort() }
+                                val fIndices =
+                                    parts.drop(1).map { (it.split("/")[0].toInt() - 1).toShort() }
                                 for (i in 1 until fIndices.size - 1) {
-                                    indices.add(fIndices[0]); indices.add(fIndices[i]); indices.add(fIndices[i + 1])
+                                    indices.add(fIndices[0]); indices.add(fIndices[i]); indices.add(
+                                        fIndices[i + 1]
+                                    )
                                 }
                             }
                         }
@@ -399,12 +455,22 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
                 val i2 = order[i + 1].toInt() * 3
                 val i3 = order[i + 2].toInt() * 3
 
-                val v1x = coords[i1]; val v1y = coords[i1 + 1]; val v1z = coords[i1 + 2]
-                val v2x = coords[i2]; val v2y = coords[i2 + 1]; val v2z = coords[i2 + 2]
-                val v3x = coords[i3]; val v3y = coords[i3 + 1]; val v3z = coords[i3 + 2]
+                val v1x = coords[i1];
+                val v1y = coords[i1 + 1];
+                val v1z = coords[i1 + 2]
+                val v2x = coords[i2];
+                val v2y = coords[i2 + 1];
+                val v2z = coords[i2 + 2]
+                val v3x = coords[i3];
+                val v3y = coords[i3 + 1];
+                val v3z = coords[i3 + 2]
 
-                val ax = v2x - v1x; val ay = v2y - v1y; val az = v2z - v1z
-                val bx = v3x - v1x; val by = v3y - v1y; val bz = v3z - v1z
+                val ax = v2x - v1x;
+                val ay = v2y - v1y;
+                val az = v2z - v1z
+                val bx = v3x - v1x;
+                val by = v3y - v1y;
+                val bz = v3z - v1z
 
                 val nx = ay * bz - az * by
                 val ny = az * bx - ax * bz
@@ -415,7 +481,9 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
                 normals[i3] += nx; normals[i3 + 1] += ny; normals[i3 + 2] += nz
             }
             for (i in normals.indices step 3) {
-                val length = Math.sqrt((normals[i] * normals[i] + normals[i + 1] * normals[i + 1] + normals[i + 2] * normals[i + 2]).toDouble()).toFloat()
+                val length =
+                    Math.sqrt((normals[i] * normals[i] + normals[i + 1] * normals[i + 1] + normals[i + 2] * normals[i + 2]).toDouble())
+                        .toFloat()
                 if (length > 0) {
                     normals[i] /= length; normals[i + 1] /= length; normals[i + 2] /= length
                 }
@@ -435,7 +503,14 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
             }
         }
 
-        fun draw(mvpMatrix: FloatArray, modelMatrix: FloatArray, alpha: Float, lightDir: FloatArray, lightColor: FloatArray, ambient: Float) {
+        fun draw(
+            mvpMatrix: FloatArray,
+            modelMatrix: FloatArray,
+            alpha: Float,
+            lightDir: FloatArray,
+            lightColor: FloatArray,
+            ambient: Float
+        ) {
             if (program == 0 || drawCount == 0 || vaoId == 0) return
             GLES30.glUseProgram(program)
 
@@ -470,7 +545,10 @@ open class OrientationVisualizerView(context: Context, attrs: AttributeSet? = nu
                 val compiled = IntArray(1)
                 GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compiled, 0)
                 if (compiled[0] == 0) {
-                    Log.e("OrientationVisualizer", "Shader Error: ${GLES30.glGetShaderInfoLog(shader)}")
+                    Log.e(
+                        "OrientationVisualizer",
+                        "Shader Error: ${GLES30.glGetShaderInfoLog(shader)}"
+                    )
                     GLES30.glDeleteShader(shader)
                 }
             }

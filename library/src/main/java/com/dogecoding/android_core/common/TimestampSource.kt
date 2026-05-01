@@ -9,7 +9,7 @@ class TimestampSource {
             return SystemClock.elapsedRealtime()
         }
 
-        fun getMicros() : Long {
+        fun getMicros(): Long {
             return SystemClock.elapsedRealtimeNanos() / 1000
         }
     }

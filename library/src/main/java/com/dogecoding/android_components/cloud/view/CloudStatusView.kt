@@ -142,11 +142,15 @@ class CloudStatusView @JvmOverloads constructor(
         if (animate) {
             this.animate().alpha(targetGlobalAlpha).setDuration(DURATION_TRANSITION).start()
             if (!isDisabled) {
-                binding.cloudIndicator.animate().alpha(cloudAlpha).setDuration(DURATION_TRANSITION).start()
-                binding.forbiddenIndicator.animate().alpha(forbiddenAlpha).setDuration(DURATION_TRANSITION).start()
+                binding.cloudIndicator.animate().alpha(cloudAlpha).setDuration(DURATION_TRANSITION)
+                    .start()
+                binding.forbiddenIndicator.animate().alpha(forbiddenAlpha)
+                    .setDuration(DURATION_TRANSITION).start()
             }
-            binding.cloudProgress.animate().alpha(progressAlpha).setDuration(DURATION_TRANSITION).start()
-            binding.syncCountText.animate().alpha(textAlpha).setDuration(DURATION_TRANSITION).start()
+            binding.cloudProgress.animate().alpha(progressAlpha).setDuration(DURATION_TRANSITION)
+                .start()
+            binding.syncCountText.animate().alpha(textAlpha).setDuration(DURATION_TRANSITION)
+                .start()
         } else {
             this.animate().cancel()
             this.alpha = targetGlobalAlpha
