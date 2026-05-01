@@ -6,8 +6,8 @@ import android.content.Intent
 import android.hardware.usb.UsbManager
 import android.os.Process
 import android.util.Log
-import com.dogecoding.android_embedded.serial.model.SerialInterface
-import com.dogecoding.android_embedded.serial.model.SerialListener
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialInterface
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialListener
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
@@ -186,7 +186,7 @@ class UsbSerial(private val baudRate: Int) : SerialInputOutputManager.Listener, 
 
     override fun onNewData(data: ByteArray?) {
         if (connected && data != null) {
-            serialListener?.onNewData(data)
+            serialListener?.onNewData(data.toUByteArray())
         }
     }
 

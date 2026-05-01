@@ -13,7 +13,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.dogecoding.android_embedded.serial.model.SerialListener
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialListener
 import com.hoho.android.usbserial.driver.UsbSerialProber
 
 class UsbSerialViewModel(application: Application) : AndroidViewModel(application) {
@@ -91,6 +91,7 @@ class UsbSerialViewModel(application: Application) : AndroidViewModel(applicatio
         _discoveredDevices.postValue(devices)
     }
 
+    @OptIn(ExperimentalUnsignedTypes::class)
     fun connect(activity: Activity, serialDevice: SerialDevice, baudRate: Int = 115200) {
         if (_connectionState.value != ConnectionState.DISCONNECTED) {
             disconnect()
@@ -113,7 +114,7 @@ class UsbSerialViewModel(application: Application) : AndroidViewModel(applicatio
                 usbSerial = null
             }
 
-            override fun onNewData(data: ByteArray) {
+            override fun onNewData(data: UByteArray) {
                 // Handled by consumers of currentUsbSerial
             }
 

@@ -3,6 +3,7 @@ package com.dogecoding.android_embedded.serial.model
 import android.content.Context
 import com.dogecoding.android_embedded.serial.model.SerialListener
 
+@OptIn(ExperimentalUnsignedTypes::class)
 interface SerialInterface {
     fun isConnected(): Boolean
     fun isConnecting(): Boolean

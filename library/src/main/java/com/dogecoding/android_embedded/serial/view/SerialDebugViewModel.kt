@@ -2,8 +2,8 @@ package com.dogecoding.android_embedded.serial.view
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dogecoding.android_embedded.serial.model.SerialInterface
-import com.dogecoding.android_embedded.serial.model.SerialListener
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialInterface
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialListener
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,13 +114,14 @@ class SerialDebugViewModel : ViewModel(), SerialListener {
         }
     }
 
-    override fun onNewData(data: ByteArray) {
+    override fun onNewData(data: UByteArray) {
         viewModelScope.launch {
-            _logEvents.emit(LogEvent.Data(data, true))
+            val bytes = data.toByteArray()
+            _logEvents.emit(LogEvent.Data(bytes, true))
 
             if (loopbackEnabled.value) {
-                writeToSerial(data)
-                _logEvents.emit(LogEvent.Data(data, false))
+                writeToSerial(bytes)
+                _logEvents.emit(LogEvent.Data(bytes, false))
             }
         }
     }

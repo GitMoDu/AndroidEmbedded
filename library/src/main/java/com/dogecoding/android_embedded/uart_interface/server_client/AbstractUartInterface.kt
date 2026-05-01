@@ -2,7 +2,7 @@ package com.dogecoding.android_embedded.uart_interface.server_client
 
 import android.content.Context
 import android.util.Log
-import com.dogecoding.android_embedded.serial.model.SerialInterface
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialInterface
 import com.dogecoding.android_embedded.uart_interface.UartMessenger
 import com.dogecoding.android_embedded.uart_interface.model.UartMessengerListener
 

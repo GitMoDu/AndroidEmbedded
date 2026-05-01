@@ -2,8 +2,8 @@ package com.dogecoding.android_embedded.uart_interface
 
 import android.content.Context
 import android.util.Log
-import com.dogecoding.android_embedded.serial.model.SerialInterface
-import com.dogecoding.android_embedded.serial.model.SerialListener
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialInterface
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialListener
 import com.dogecoding.android_embedded.uart_interface.async.AbstractUartAsyncReceiver
 import com.dogecoding.android_embedded.uart_interface.codec.Cobs
 import com.dogecoding.android_embedded.uart_interface.codec.UartCrc
@@ -126,10 +126,10 @@ class UartMessenger(
         receiveListener?.onUartStateChange(false)
     }
 
-    override fun onNewData(data: ByteArray) {
+    override fun onNewData(data: UByteArray) {
         synchronized(readToken) {
             data.forEach {
-                inSize = uartParser.parseIn(inBuffer, it.toUByte())
+                inSize = uartParser.parseIn(inBuffer, it)
                 if (inSize > 0) {
                     parsePacket(inBuffer, inSize)
                 }

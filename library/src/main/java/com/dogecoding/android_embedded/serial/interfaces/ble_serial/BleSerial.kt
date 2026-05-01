@@ -4,8 +4,8 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.util.Log
-import com.dogecoding.android_embedded.serial.model.SerialInterface
-import com.dogecoding.android_embedded.serial.model.SerialListener
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialInterface
+import com.dogecoding.android_embedded.inertia.drivers.hardware_interface.serial.SerialListener
 import com.dogecoding.android_embedded.serial.interfaces.ble_serial.manager.AbstractBleSerialManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +59,7 @@ class BleSerial<T : AbstractBleSerialManager>(
         
         manager.dataReceivedCallback = { data ->
             synchronized(listeners) {
-                listeners.forEach { it.onNewData(data) }
+                listeners.forEach { it.onNewData(data.toUByteArray()) }
             }
         }
         manager.rssiCallback = { rssi ->
